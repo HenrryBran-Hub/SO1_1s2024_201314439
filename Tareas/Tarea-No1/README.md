@@ -3,16 +3,14 @@
 ---
 ---
 
-# Mi Proyecto Genial
-
 Acontinuacion se tendra el desarrollo de la tarea No. 1 de SO1
 
-## Video de Demostración de Docker
+## Video de Demostración de Docker :movie_camera:
 
 ### Enlace al Video con Miniatura
 [![Miniatura del Video(hacer click en la imagen)](https://github.com/HenrryBran-Hub/SO1_1s2024_201314439/blob/main/Tareas/Tarea-No1/Img/Video.gif)](https://www.youtube.com/watch?v=CSL-jXgtDT8)
 
-### otros-Links
+### otros-Links :link:
 
 1. [Enunciado de la Tarea](https://drive.google.com/file/d/1UuAVq9pKQgrtWaybUG6rS5NsQkd4TTrd/view?usp=sharing)
 2. [Link de Video(por si no fuciona el de arriba)](https://www.youtube.com/watch?v=CSL-jXgtDT8)
@@ -104,7 +102,7 @@ docker stop ID
 ![Ejecucion de comando](https://github.com/HenrryBran-Hub/SO1_1s2024_201314439/blob/main/Tareas/Tarea-No1/Img/datas.gif)
 ---
 
-## EXTRA
+## :large_orange_diamond: EXTRA :large_orange_diamond:
 
 Agregamos un archivo (frontend-react) a docker hub mediante la siguiente forma
 ---
