@@ -3,6 +3,26 @@
 ---
 ---
 
+# Mi Proyecto Genial
+
+Acontinuacion se tendra el desarrollo de la tarea No. 1 de SO1
+
+## Video de Demostración de Docker
+
+### Incrustado en el README
+<iframe width="560" height="315" src="https://www.youtube.com/watch?v=CSL-jXgtDT8" frameborder="0" allowfullscreen></iframe>
+
+### Enlace al Video con Miniatura
+[![Miniatura del Video](https://www.youtube.com/watch?v=CSL-jXgtDT8)](https://www.youtube.com/watch?v=CSL-jXgtDT8)
+
+### otros-Links
+
+1. [Enunciado de la Tarea](https://drive.google.com/file/d/1UuAVq9pKQgrtWaybUG6rS5NsQkd4TTrd/view?usp=sharing)
+2. [Link de Video](https://www.youtube.com/watch?v=CSL-jXgtDT8)
+
+---
+---
+
 ## Comandos utilizados en el backend de docker 
 
 ```javascript
@@ -90,9 +110,11 @@ docker stop ID
 ## EXTRA
 
 Agregamos un archivo (frontend-react) a docker hub mediante la siguiente forma
+---
 ![Ejecucion de comando](https://github.com/HenrryBran-Hub/SO1_1s2024_201314439/blob/main/Tareas/Tarea-No1/Img/D-D.gif)
 ---
 Se agrego esa extension de docker y sale un menu emergente para hacer el docker push.
-Ya por ultimo verificamos en nuestro docker hub
+Ya por ultimo verificamos en nuestro docker hub 
+---
 ![Ejecucion de comando](https://github.com/HenrryBran-Hub/SO1_1s2024_201314439/blob/main/Tareas/Tarea-No1/Img/D-H.gif)
 ---
