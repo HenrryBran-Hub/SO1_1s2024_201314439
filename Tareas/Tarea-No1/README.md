@@ -9,16 +9,13 @@ Acontinuacion se tendra el desarrollo de la tarea No. 1 de SO1
 
 ## Video de Demostración de Docker
 
-### Incrustado en el README
-<iframe width="560" height="315" src="https://github.com/HenrryBran-Hub/SO1_1s2024_201314439/blob/main/Tareas/Tarea-No1/Img/Video.gif" frameborder="0" allowfullscreen></iframe>
-
 ### Enlace al Video con Miniatura
-[![Miniatura del Video](https://github.com/HenrryBran-Hub/SO1_1s2024_201314439/blob/main/Tareas/Tarea-No1/Img/Video.gif)](https://www.youtube.com/watch?v=CSL-jXgtDT8)
+[![Miniatura del Video(hacer click en la imagen)](https://github.com/HenrryBran-Hub/SO1_1s2024_201314439/blob/main/Tareas/Tarea-No1/Img/Video.gif)](https://www.youtube.com/watch?v=CSL-jXgtDT8)
 
 ### otros-Links
 
 1. [Enunciado de la Tarea](https://drive.google.com/file/d/1UuAVq9pKQgrtWaybUG6rS5NsQkd4TTrd/view?usp=sharing)
-2. [Link de Video](https://www.youtube.com/watch?v=CSL-jXgtDT8)
+2. [Link de Video(por si no fuciona el de arriba)](https://www.youtube.com/watch?v=CSL-jXgtDT8)
 
 ---
 ---
