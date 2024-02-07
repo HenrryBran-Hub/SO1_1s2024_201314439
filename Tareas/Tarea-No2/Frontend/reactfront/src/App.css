@@ -1,0 +1,60 @@
+.App {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  background-color: #333; /* Fondo gris oscuro */
+}
+
+h1 {
+  font-size: 24px; /* Tamaño de fuente más grande */
+  color: #f5eaea; /* Color de texto oscuro */
+  font-family: Arial, sans-serif; /* Tipo de fuente */
+  text-align: center; /* Alineación centrada */
+  margin-bottom: 20px; /* Espacio inferior */
+  text-transform: uppercase; /* Convertir texto en mayúsculas */
+}
+
+button {
+  padding: 10px 20px;
+  margin-top: 10px;
+  background-color: #4CAF50; /* Color verde */
+  color: white;
+  border: none;
+  border-radius: 20px; /* Botones con bordes redondeados */
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+button:hover {
+  background-color: #45a049; /* Cambio de color al pasar el cursor */
+}
+
+button:focus {
+  outline: none; /* Quita el contorno al hacer focus */
+}
+
+img {
+  border-radius: 50%; /* Imagen circular */
+  margin-top: 50px; /* Baja la imagen capturada */
+}
+
+.Webcam {
+  margin-top: 20px; /* Baja la cámara */
+}
+
+.send-button {
+  background-color: #f80909; /* Fondo gris oscuro */
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.send-button:hover {
+  background-color: #555; /* Cambio de color al pasar el cursor */
+}
+

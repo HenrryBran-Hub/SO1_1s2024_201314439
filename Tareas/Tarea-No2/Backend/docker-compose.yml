@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  nodeback:
+    container_name: node_container
+    build: .
+    ports:
+      - "5000:5000"
+    depends_on:
+      - mongo
+    networks:
+      - my_network
+
+  reactfront:
+    container_name: react_container
+    build: ../Frontend/reactfront   # Ruta al directorio que contiene el Dockerfile para el reactfront
+    ports:
+      - "3000:3000"
+    depends_on:
+      - nodeback
+    networks:
+      - my_network
+
+  mongo:
+    container_name: mongo_container
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - my_network
+
+networks:
+  my_network:
+
+volumes:
+  mongo_data:
