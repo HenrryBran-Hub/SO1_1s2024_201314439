@@ -9,13 +9,8 @@ const port = 5000;
 app.use(bodyParser.json());
 app.use(cors()); 
 
-// Middleware de CORS solo para la ruta /upload
-app.use('/upload', cors({
-  origin: 'http://localhost:3000',
-}));
-
 // Conexión a MongoDB con Mongoose
-mongoose.connect('mongodb://localhost:27017/DB');
+mongoose.connect('mongodb://mongo:27017/DB');
 const db = mongoose.connection;
 
 db.on('error', console.error.bind(console, 'Error de conexión a la base de datos:'));
