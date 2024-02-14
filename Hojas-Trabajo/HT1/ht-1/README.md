@@ -12,11 +12,11 @@ Acontinuacion se tendra el desarrollo de la Hoja de Trabajo No. 1 de SO1
 
 ### Enlace al Video con Miniatura
 
-[![Miniatura del Video(hacer click en la imagen)](https://github.com/HenrryBran-Hub/SO1_1s2024_201314439/blob/feature-wails/Hojas-Trabajo/HT1/ht-1/Img/4.gif)](https://www.youtube.com/watch?v=N4j2xzdITHM)
+[![Miniatura del Video(hacer click en la imagen)](https://github.com/HenrryBran-Hub/SO1_1s2024_201314439/blob/main/Hojas-Trabajo/HT1/ht-1/Img/4.gif)](https://www.youtube.com/watch?v=N4j2xzdITHM)
 
 ### otros-Links :link:
 
-1. [Enunciado de la Tarea](https://drive.google.com/file/d/1UuAVq9pKQgrtWaybUG6rS5NsQkd4TTrd/view?usp=sharing)
+1. [Enunciado de la Tarea](https://github.com/HenrryBran-Hub/SO1_1s2024_201314439/blob/main/Hojas-Trabajo/HT1/ht-1/Img/SO1_HT1_1S2024.pdf)
 2. [Link de Video(por si no fuciona el de arriba)](https://www.youtube.com/watch?v=N4j2xzdITHM)
 
 ---
@@ -44,7 +44,7 @@ seq_printf(archivo, ' \t"memoria_total": %lu\n}', si.totalram);
 
 ### Quitando el archivo
 
-![Ejecucion de rm](https://github.com/HenrryBran-Hub/SO1_1s2024_201314439/blob/feature-wails/Hojas-Trabajo/HT1/ht-1/Img/3.gif)
+![Ejecucion de rm](https://github.com/HenrryBran-Hub/SO1_1s2024_201314439/blob/main/Hojas-Trabajo/HT1/ht-1/Img/3.gif)
 
 ---
 
