@@ -1,5 +1,57 @@
 # README
 
+# Hoja de Trabajo No. 1 SO1
+
+---
+
+---
+
+Acontinuacion se tendra el desarrollo de la Hoja de Trabajo No. 1 de SO1
+
+## Video de Demostración de Modulo :movie_camera:
+
+### Enlace al Video con Miniatura
+
+[![Miniatura del Video(hacer click en la imagen)](https://github.com/HenrryBran-Hub/SO1_1s2024_201314439/blob/feature-wails/Hojas-Trabajo/HT1/ht-1/Img/4.gif)](https://www.youtube.com/watch?v=N4j2xzdITHM)
+
+### otros-Links :link:
+
+1. [Enunciado de la Tarea](https://drive.google.com/file/d/1UuAVq9pKQgrtWaybUG6rS5NsQkd4TTrd/view?usp=sharing)
+2. [Link de Video(por si no fuciona el de arriba)](https://www.youtube.com/watch?v=N4j2xzdITHM)
+
+---
+
+---
+
+## Comandos utilizados en el ram.c nuevos
+
+```javascript
+//Para crear nuestro json
+seq_printf(archivo, '{ \n \t"memoria_libre": %lu,\n', si.freeram);
+seq_printf(archivo, ' \t"memoria_ocupada": %lu,\n', si.totalram - si.freeram);
+seq_printf(archivo, ' \t"memoria_total": %lu\n}', si.totalram);
+```
+
+![Creacion de make](https://github.com/HenrryBran-Hub/SO1_1s2024_201314439/blob/feature-wails/Hojas-Trabajo/HT1/ht-1/Img/1.gif)
+
+### Ejecucion del archivo build
+
+![Ejecucion de build](https://github.com/HenrryBran-Hub/SO1_1s2024_201314439/blob/feature-wails/Hojas-Trabajo/HT1/ht-1/Img/2.gif)
+
+---
+
+---
+
+### Quitando el archivo
+
+![Ejecucion de rm](https://github.com/HenrryBran-Hub/SO1_1s2024_201314439/blob/feature-wails/Hojas-Trabajo/HT1/ht-1/Img/3.gif)
+
+---
+
+---
+
+## Extra
+
 ## About
 
 This is the official Wails React template.
