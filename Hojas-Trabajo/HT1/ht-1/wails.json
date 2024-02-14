@@ -1,0 +1,13 @@
+{
+  "$schema": "https://wails.io/schemas/config.v2.json",
+  "name": "ht-1",
+  "outputfilename": "ht-1",
+  "frontend:install": "npm install",
+  "frontend:build": "npm run build",
+  "frontend:dev:watcher": "npm run dev",
+  "frontend:dev:serverUrl": "auto",
+  "author": {
+    "name": "HENRRY DAVID BRAN VELASQUEZ",
+    "email": "2168036320108@ingenieria.usac.edu.gt"
+  }
+}
