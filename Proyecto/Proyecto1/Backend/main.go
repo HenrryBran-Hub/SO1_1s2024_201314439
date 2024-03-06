@@ -59,106 +59,97 @@ func MySQLRam() {
 	}
 }
 
-func RealTimeRam() {
-	// Crear un nuevo ServeMux
-	mux := http.NewServeMux()
+func RealTimeRam(w http.ResponseWriter, r *http.Request) {
+	// Lógica para obtener la información en tiempo real de RAM
+	cmd := exec.Command("cat", "/proc/ram_201314439")
+	output, err := cmd.Output()
+	if err != nil {
+		fmt.Println("Error al leer el archivo:", err)
+		http.Error(w, "Error al leer el archivo", http.StatusInternalServerError)
+		return
+	}
 
-	// Función para el endpoint
-	mux.HandleFunc("/realtimemonitor/ram", func(w http.ResponseWriter, r *http.Request) {
-		// Leer el archivo
-		cmd := exec.Command("cat", "/proc/ram_201314439")
-		output, err := cmd.Output()
-		if err != nil {
-			fmt.Println("Error al leer el archivo:", err)
-			http.Error(w, "Error al leer el archivo", http.StatusInternalServerError)
-			return
-		}
-
-		// Escribir el JSON en la respuesta
-		w.Header().Set("Content-Type", "application/json")
-		w.Write(output)
-	})
-
-	// Habilitar CORS
-	handler := cors.Default().Handler(mux)
-
-	// Iniciar el servidor HTTP
-	http.ListenAndServe(":8080", handler)
+	// Escribir el JSON en la respuesta
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(output)
 }
 
-func HistoryRam() {
-	// Crear un nuevo ServeMux
-	mux := http.NewServeMux()
+func HistoryRam(w http.ResponseWriter, r *http.Request) {
+	// Lógica para obtener el historial de RAM
+	db, err := sql.Open("mysql", "root:123abc@tcp(localhost:3306)/KERNEL")
+	if err != nil {
+		fmt.Println("Error al conectar a la base de datos:", err)
+		http.Error(w, "Error al conectar a la base de datos", http.StatusInternalServerError)
+		return
+	}
+	defer db.Close()
 
-	// Endpoint para obtener los últimos 25 registros de la tabla ram_data
-	mux.HandleFunc("/historymonitor/ram", func(w http.ResponseWriter, r *http.Request) {
-		// Conectar a la base de datos
-		db, err := sql.Open("mysql", "root:123abc@tcp(localhost:3306)/KERNEL")
+	// Consultar los últimos 25 registros de la tabla ram_data
+	rows, err := db.Query("SELECT memoria_libre, memoria_total, memoria_ocupada, fecha_hora FROM ram_data ORDER BY fecha_hora DESC LIMIT 25")
+	if err != nil {
+		fmt.Println("Error al consultar la base de datos:", err)
+		http.Error(w, "Error al consultar la base de datos", http.StatusInternalServerError)
+		return
+	}
+	defer rows.Close()
+
+	// Crear una estructura para almacenar los datos
+	type Registro struct {
+		MemoriaLibre   int    `json:"memoria_libre"`
+		MemoriaTotal   int    `json:"memoria_total"`
+		MemoriaOcupada int    `json:"memoria_ocupada"`
+		FechaHora      string `json:"fecha_hora"`
+	}
+
+	var registros []Registro
+
+	// Iterar sobre los registros y guardarlos en la estructura
+	for rows.Next() {
+		var registro Registro
+		err := rows.Scan(&registro.MemoriaLibre, &registro.MemoriaTotal, &registro.MemoriaOcupada, &registro.FechaHora)
 		if err != nil {
-			fmt.Println("Error al conectar a la base de datos:", err)
-			http.Error(w, "Error al conectar a la base de datos", http.StatusInternalServerError)
+			fmt.Println("Error al escanear el registro:", err)
+			http.Error(w, "Error al escanear el registro", http.StatusInternalServerError)
 			return
 		}
-		defer db.Close()
+		registros = append(registros, registro)
+	}
 
-		// Consultar los últimos 25 registros de la tabla ram_data
-		rows, err := db.Query("SELECT memoria_libre, memoria_total, memoria_ocupada, fecha_hora FROM ram_data ORDER BY fecha_hora DESC LIMIT 25")
-		if err != nil {
-			fmt.Println("Error al consultar la base de datos:", err)
-			http.Error(w, "Error al consultar la base de datos", http.StatusInternalServerError)
-			return
-		}
-		defer rows.Close()
+	// Verificar si hubo un error durante el escaneo de los registros
+	if err := rows.Err(); err != nil {
+		fmt.Println("Error al obtener los registros:", err)
+		http.Error(w, "Error al obtener los registros", http.StatusInternalServerError)
+		return
+	}
 
-		// Crear una estructura para almacenar los datos
-		type Registro struct {
-			MemoriaLibre   int    `json:"memoria_libre"`
-			MemoriaTotal   int    `json:"memoria_total"`
-			MemoriaOcupada int    `json:"memoria_ocupada"`
-			FechaHora      string `json:"fecha_hora"`
-		}
-
-		var registros []Registro
-
-		// Iterar sobre los registros y guardarlos en la estructura
-		for rows.Next() {
-			var registro Registro
-			err := rows.Scan(&registro.MemoriaLibre, &registro.MemoriaTotal, &registro.MemoriaOcupada, &registro.FechaHora)
-			if err != nil {
-				fmt.Println("Error al escanear el registro:", err)
-				http.Error(w, "Error al escanear el registro", http.StatusInternalServerError)
-				return
-			}
-			registros = append(registros, registro)
-		}
-
-		// Verificar si hubo un error durante el escaneo de los registros
-		if err := rows.Err(); err != nil {
-			fmt.Println("Error al obtener los registros:", err)
-			http.Error(w, "Error al obtener los registros", http.StatusInternalServerError)
-			return
-		}
-
-		// Convertir los registros a formato JSON y enviar la respuesta
-		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(registros)
-	})
-
-	// Habilitar CORS
-	handler := cors.Default().Handler(mux)
-
-	// Iniciar el servidor HTTP
-	http.ListenAndServe(":8080", handler)
+	// Convertir los registros a formato JSON y enviar la respuesta
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(registros)
 }
 
 func main() {
 	// Ejecutar la rutina para cargar datos a MySQL
 	go MySQLRam()
 
-	// Ejecutar la rutina para manejar el endpoint HTTP
-	go RealTimeRam()
-	go HistoryRam()
-
 	// Mantener la rutina principal en espera
+	// Crear un nuevo ServeMux
+	mux := http.NewServeMux()
+
+	// Endpoint para obtener la información en tiempo real de RAM
+	mux.HandleFunc("/realtimemonitor/ram", func(w http.ResponseWriter, r *http.Request) {
+		// Lógica para obtener la información en tiempo real de RAM
+		RealTimeRam(w, r)
+	})
+
+	// Endpoint para obtener el historial de RAM
+	mux.HandleFunc("/historymonitor/ram", func(w http.ResponseWriter, r *http.Request) {
+		// Lógica para obtener el historial de RAM
+		HistoryRam(w, r)
+	})
+
+	// Iniciar el servidor HTTP con el ServeMux
+	handler := cors.Default().Handler(mux)
+	http.ListenAndServe(":8080", handler)
+
 	select {}
 }
