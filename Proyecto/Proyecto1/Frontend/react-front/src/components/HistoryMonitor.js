@@ -11,25 +11,64 @@ const HistoryMonitor = () => {
 
   useEffect(() => {
     const intervalId = setInterval(() => {
-      fetch("http://localhost:8080/realtimemonitor/ram")
+      if (lineChartRef) {
+        lineChartRef.destroy();
+      }
+
+      const ctx = document.getElementById("lineChart").getContext("2d");
+      lineChartRef = new Chart(ctx, {
+        type: "line",
+        data: {
+          labels: [],
+          datasets: [
+            {
+              label: "Memoria Ocupada",
+              data: [],
+              borderColor: "#36a2eb",
+              fill: false,
+            },
+            {
+              label: "Memoria Libre",
+              data: [],
+              borderColor: "#ff6384",
+              fill: false,
+            },
+          ],
+        },
+        options: {
+          scales: {
+            x: {
+              type: "category",
+            },
+          },
+        },
+      });
+
+      fetch("http://localhost:8080/historymonitor/ram")
         .then((response) => response.json())
         .then((data) => {
           setErrorDeConexion(false);
-          setData(data);
-          actualizarGraficoLineas(data);
           console.log(data);
+          setData(data);
+          actualizarGraficoLineas();
         })
         .catch((error) => {
           setErrorDeConexion(true);
           console.error("Error de conexión:", error);
         });
-    }, 2500);
+    }, 5000);
 
-    return () => clearInterval(intervalId);
+    return () => {
+      clearInterval(intervalId);
+      if (lineChartRef) {
+        lineChartRef.destroy();
+      }
+    };
   }, []);
 
-  const actualizarGraficoLineas = (data) => {
-    if (lineChartRef) {
+  const actualizarGraficoLineas = () => {
+    if (lineChartRef && data.length > 0) {
+      // Verifica si hay datos antes de actualizar el gráfico
       const fechas = data.map((dato) => dato.fecha_hora);
       const memoriaOcupada = data.map((dato) => dato.memoria_ocupada);
       const memoriaLibre = data.map((dato) => dato.memoria_libre);
@@ -40,47 +79,6 @@ const HistoryMonitor = () => {
       lineChartRef.update();
     }
   };
-
-  useEffect(() => {
-    const ctx = document.getElementById("lineChart").getContext("2d");
-    lineChartRef = new Chart(ctx, {
-      type: "line",
-      data: {
-        labels: [],
-        datasets: [
-          {
-            label: "Memoria Ocupada",
-            data: [],
-            borderColor: "#36a2eb",
-            fill: false,
-          },
-          {
-            label: "Memoria Libre",
-            data: [],
-            borderColor: "#ff6384",
-            fill: false,
-          },
-        ],
-      },
-      options: {
-        scales: {
-          x: {
-            type: "time",
-            time: {
-              parser: "HH:mm:ss",
-              tooltipFormat: "HH:mm:ss",
-              unit: "second",
-              displayFormats: {
-                second: "HH:mm:ss",
-              },
-            },
-          },
-        },
-      },
-    });
-
-    return () => lineChartRef.destroy();
-  }, []);
 
   return (
     <div>
