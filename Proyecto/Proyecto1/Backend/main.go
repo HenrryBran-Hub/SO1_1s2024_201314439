@@ -13,6 +13,18 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
+var db *sql.DB
+
+func init() {
+	// Abre la conexión a la base de datos
+	var err error
+	db, err = sql.Open("mysql", "root:123abc@tcp(localhost:3306)/KERNEL")
+	if err != nil {
+		fmt.Println("Error al conectar a la base de datos:", err)
+		panic(err)
+	}
+}
+
 func MySQLRam() {
 	for {
 		// Leer el archivo
@@ -31,13 +43,9 @@ func MySQLRam() {
 			continue
 		}
 
-		// Conectar a la base de datos
-		db, err := sql.Open("mysql", "root:123abc@tcp(localhost:3306)/KERNEL")
-		if err != nil {
-			fmt.Println("Error al conectar a la base de datos:", err)
-			continue
-		}
-		defer db.Close()
+		// Calcular los porcentajes de memoria
+		memoriaLibre := float64(data["memoria_libre"]) / float64(data["memoria_total"]) * 100.00
+		memoriaOcupada := float64(data["memoria_ocupada"]) / float64(data["memoria_total"]) * 100.00
 
 		currentTime := time.Now()
 
@@ -46,7 +54,7 @@ func MySQLRam() {
 
 		// Insertar los datos en la base de datos con la hora actual como cadena
 		_, err = db.Exec("INSERT INTO ram_data (memoria_libre, memoria_total, memoria_ocupada, fecha_hora) VALUES (?, ?, ?, ?)",
-			data["memoria_libre"], data["memoria_total"], data["memoria_ocupada"], horaActual)
+			memoriaLibre, data["memoria_total"], memoriaOcupada, horaActual)
 		if err != nil {
 			fmt.Println("Error al insertar datos en la base de datos:", err)
 			continue
@@ -85,7 +93,7 @@ func HistoryRam(w http.ResponseWriter, r *http.Request) {
 	defer db.Close()
 
 	// Consultar los últimos 25 registros de la tabla ram_data
-	rows, err := db.Query("SELECT memoria_libre, memoria_total, memoria_ocupada, fecha_hora FROM ram_data ORDER BY fecha_hora DESC LIMIT 25")
+	rows, err := db.Query("SELECT memoria_libre, memoria_total, memoria_ocupada, fecha_hora FROM (SELECT * FROM ram_data ORDER BY id DESC LIMIT 25) sub ORDER BY id ASC")
 	if err != nil {
 		fmt.Println("Error al consultar la base de datos:", err)
 		http.Error(w, "Error al consultar la base de datos", http.StatusInternalServerError)
@@ -95,10 +103,10 @@ func HistoryRam(w http.ResponseWriter, r *http.Request) {
 
 	// Crear una estructura para almacenar los datos
 	type Registro struct {
-		MemoriaLibre   int    `json:"memoria_libre"`
-		MemoriaTotal   int    `json:"memoria_total"`
-		MemoriaOcupada int    `json:"memoria_ocupada"`
-		FechaHora      string `json:"fecha_hora"`
+		MemoriaLibre   float32 `json:"memoria_libre"`
+		MemoriaTotal   float32 `json:"memoria_total"`
+		MemoriaOcupada float32 `json:"memoria_ocupada"`
+		FechaHora      string  `json:"fecha_hora"`
 	}
 
 	var registros []Registro
