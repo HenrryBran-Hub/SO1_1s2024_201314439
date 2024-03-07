@@ -5,8 +5,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"os"
 	"os/exec"
 	"time"
+
+	"github.com/gorilla/handlers"
 
 	"github.com/rs/cors"
 
@@ -135,28 +138,93 @@ func HistoryRam(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(registros)
 }
 
+func ProcessTreePID() ([]string, error) {
+	// Ejecutar el comando para leer el archivo JSON
+	cmd := exec.Command("cat", "/proc/cpu_201314439")
+	output, err := cmd.Output()
+	if err != nil {
+		return nil, fmt.Errorf("error al ejecutar el comando: %w", err)
+	}
+
+	// Decodificar el JSON
+	var data map[string]interface{}
+	if err := json.Unmarshal(output, &data); err != nil {
+		return nil, fmt.Errorf("error al decodificar el JSON: %w", err)
+	}
+
+	// Extraer los PID
+	var pids []string
+	if processes, ok := data["procesos"].([]interface{}); ok {
+		for _, process := range processes {
+			if pidMap, ok := process.(map[string]interface{})["PID"]; ok {
+				if pid, ok := pidMap.(string); ok {
+					pids = append(pids, "PID_"+pid)
+				}
+			}
+		}
+	}
+
+	return pids, nil
+}
+
+func ProcessTreePIDHandler(w http.ResponseWriter, r *http.Request) {
+	// Obtener los PID
+	pids, err := ProcessTreePID()
+	if err != nil {
+		http.Error(w, "Error al obtener los PID", http.StatusInternalServerError)
+		return
+	}
+
+	// Convertir los PID a JSON
+	response, err := json.Marshal(pids)
+	if err != nil {
+		http.Error(w, "Error al convertir los PID a JSON", http.StatusInternalServerError)
+		return
+	}
+
+	// Escribir la respuesta
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(response)
+}
+
 func main() {
 	// Ejecutar la rutina para cargar datos a MySQL
-	go MySQLRam()
+	//go MySQLRam()
 
 	// Mantener la rutina principal en espera
 	// Crear un nuevo ServeMux
 	mux := http.NewServeMux()
+	/*
+		// Endpoint para obtener la información en tiempo real de RAM
+		mux.HandleFunc("/realtimemonitor/ram", func(w http.ResponseWriter, r *http.Request) {
+			// Lógica para obtener la información en tiempo real de RAM
+			RealTimeRam(w, r)
+		})
 
-	// Endpoint para obtener la información en tiempo real de RAM
-	mux.HandleFunc("/realtimemonitor/ram", func(w http.ResponseWriter, r *http.Request) {
-		// Lógica para obtener la información en tiempo real de RAM
-		RealTimeRam(w, r)
-	})
-
-	// Endpoint para obtener el historial de RAM
-	mux.HandleFunc("/historymonitor/ram", func(w http.ResponseWriter, r *http.Request) {
+		// Endpoint para obtener el historial de RAM
+		mux.HandleFunc("/historymonitor/ram", func(w http.ResponseWriter, r *http.Request) {
+			// Lógica para obtener el historial de RAM
+			HistoryRam(w, r)
+		})
+	*/
+	// Endpoint para obtener los PID del árbol de procesos
+	mux.HandleFunc("/processtree/pid", func(w http.ResponseWriter, r *http.Request) {
 		// Lógica para obtener el historial de RAM
-		HistoryRam(w, r)
+		ProcessTreePIDHandler(w, r)
 	})
 
 	// Iniciar el servidor HTTP con el ServeMux
-	handler := cors.Default().Handler(mux)
+	loggedRouter := handlers.LoggingHandler(os.Stdout, mux)
+
+	// Configura el middleware CORS
+	c := cors.New(cors.Options{
+		AllowedOrigins:   []string{"*"}, // Permite todas las origenes
+		AllowCredentials: true,
+		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE"}, // Métodos permitidos
+	})
+
+	handler := c.Handler(loggedRouter)
+
 	http.ListenAndServe(":8080", handler)
 
 	select {}
