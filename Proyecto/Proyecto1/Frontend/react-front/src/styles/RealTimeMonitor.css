@@ -26,3 +26,8 @@ div {
   width: 60%;
   align-items: center;
 }
+
+.chart-container {
+  width: 300px; /* Ancho fijo */
+  height: 300px; /* Alto fijo */
+}

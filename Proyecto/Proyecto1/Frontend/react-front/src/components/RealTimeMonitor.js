@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import React from "react";
 import NavBar from "./MyNavBar";
 import "../styles/RealTimeMonitor.css";
@@ -11,7 +11,7 @@ const RealTimeMonitor = () => {
   const [memoriaLlena, setMemoriaLlena] = useState(0);
   const [memoriaVacia, setMemoriaVacia] = useState(0);
   const [errorDeConexion, setErrorDeConexion] = useState(false); // Estado para manejar errores de conexión
-  let donaChartRef = null;
+  const donaChartRef = useRef(null); // Usar useRef en lugar de let
 
   useEffect(() => {
     const intervalId = setInterval(() => {
@@ -54,16 +54,16 @@ const RealTimeMonitor = () => {
 
   // Función para actualizar el gráfico de dona
   const actualizarGraficoDona = () => {
-    if (donaChartRef) {
-      donaChartRef.data.datasets[0].data = [memoriaLlena, memoriaVacia];
-      donaChartRef.update();
+    if (donaChartRef.current) {
+      donaChartRef.current.data.datasets[0].data = [memoriaLlena, memoriaVacia];
+      donaChartRef.current.update();
     }
   };
 
   useEffect(() => {
     // Crear gráfico de dona
     const ctx = document.getElementById("donaChart").getContext("2d");
-    donaChartRef = new Chart(ctx, {
+    donaChartRef.current = new Chart(ctx, {
       type: "doughnut",
       data: {
         labels: ["Lleno", "Vacio"],
@@ -77,9 +77,8 @@ const RealTimeMonitor = () => {
     });
 
     // Devuelve una función de limpieza para detener el intervalo cuando el componente se desmonta
-    return () => donaChartRef.destroy();
+    return () => donaChartRef.current.destroy();
   }, [memoriaOcupada, memoriaLibre]);
-
   return (
     <div>
       <NavBar />
@@ -113,11 +112,8 @@ const RealTimeMonitor = () => {
           <label>Porcentaje Memoria Llena:</label>
           <span>{memoriaLlena} %</span>
         </div>
-        <div
-          className="chart-container"
-          style={{ width: "50%", margin: "auto" }}
-        >
-          <canvas id="donaChart" width="200" height="200"></canvas>
+        <div className="chart-container">
+          <canvas id="donaChart" width="300" height="300"></canvas>
         </div>
       </div>
     </div>
