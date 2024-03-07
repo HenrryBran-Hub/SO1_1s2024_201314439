@@ -6,6 +6,7 @@ import Chart from "chart.js/auto";
 
 const HistoryMonitor = () => {
   const [errorDeConexion, setErrorDeConexion] = useState(false);
+  const [msgerror, setMsgError] = useState("");
   const lineChartRef = useRef(null); // Usar useRef en lugar de let
 
   useEffect(() => {
@@ -14,19 +15,15 @@ const HistoryMonitor = () => {
         .then((response) => response.json())
         .then((data) => {
           setErrorDeConexion(false);
+          setMsgError("");
           const fecha = data.map((dato) => dato.fecha_hora);
           const memoriaOcupada = data.map((dato) => dato.memoria_ocupada);
           const memoriaLibre = data.map((dato) => dato.memoria_libre);
-
-          console.log("/////INGRESO/////");
-          console.log(memoriaOcupada);
-          console.log(memoriaLibre);
-          console.log(fecha);
-          console.log("/////INGRESO/////");
           actualizarGraficoLineas(memoriaOcupada, memoriaLibre, fecha);
         })
         .catch((error) => {
           setErrorDeConexion(true);
+          setMsgError("Error de conexión. Inténtelo de nuevo más tarde.");
           console.error("Error de conexión:", error);
         });
     }, 2500);
@@ -37,11 +34,6 @@ const HistoryMonitor = () => {
   const actualizarGraficoLineas = (memoriaOcupada, memoriaLibre, fecha) => {
     if (lineChartRef.current) {
       // Verifica si hay datos antes de actualizar el gráfico
-      console.log("/////ACTUALIZACION/////");
-      console.log(memoriaOcupada);
-      console.log(memoriaLibre);
-      console.log(fecha);
-      console.log("/////ACTUALIZACION/////");
       lineChartRef.current.data.labels = fecha;
       lineChartRef.current.data.datasets[0].data = memoriaOcupada;
       lineChartRef.current.data.datasets[1].data = memoriaLibre;
@@ -88,14 +80,9 @@ const HistoryMonitor = () => {
     <div>
       <NavBar />
       <div className="container">
-        <h1 className="titulo">Monitoreo en Tiempo Real</h1>
-
-        {errorDeConexion && (
-          <div className="error-message">
-            Error de conexión. Inténtelo de nuevo más tarde.
-          </div>
-        )}
-
+        <h1 className="titulo">Monitoreo Historico</h1>
+        {errorDeConexion && <div className="error-message">{msgerror}</div>}
+        <h4 className="titulo-dos">Memoria Ram</h4>
         <div className="chart-container-graf">
           <canvas id="lineChart" width="800" height="400"></canvas>
         </div>

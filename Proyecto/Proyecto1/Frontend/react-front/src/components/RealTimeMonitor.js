@@ -10,6 +10,7 @@ const RealTimeMonitor = () => {
   const [memoriaTotal, setMemoriaTotal] = useState(0);
   const [memoriaLlena, setMemoriaLlena] = useState(0);
   const [memoriaVacia, setMemoriaVacia] = useState(0);
+  const [msgerror, setMsgError] = useState("");
   const [errorDeConexion, setErrorDeConexion] = useState(false); // Estado para manejar errores de conexión
   const donaChartRef = useRef(null); // Usar useRef en lugar de let
 
@@ -20,7 +21,7 @@ const RealTimeMonitor = () => {
         .then((data) => {
           // Reiniciar el estado de error de conexión si la solicitud es exitosa
           setErrorDeConexion(false);
-
+          setMsgError("");
           const memoriaLibre = data.memoria_libre;
           const memoriaOcupada = data.memoria_ocupada;
           const memoriaTotal = data.memoria_total;
@@ -45,6 +46,7 @@ const RealTimeMonitor = () => {
         .catch((error) => {
           // Manejar errores de conexión
           setErrorDeConexion(true);
+          setMsgError("Error de conexión. Inténtelo de nuevo más tarde.");
           console.error("Error de conexión:", error);
         });
     }, 2500);
@@ -86,11 +88,7 @@ const RealTimeMonitor = () => {
         <h1 className="titulo">Monitoreo en Tiempo Real</h1>
 
         {/* Mostrar un mensaje de error si hay un error de conexión */}
-        {errorDeConexion && (
-          <div className="error-message">
-            Error de conexión. Inténtelo de nuevo más tarde.
-          </div>
-        )}
+        {errorDeConexion && <div className="error-message">{msgerror}</div>}
 
         <div className="result-container">
           <label>Memoria Libre:</label>
