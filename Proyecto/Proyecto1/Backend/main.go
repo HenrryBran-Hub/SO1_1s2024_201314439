@@ -45,7 +45,7 @@ func init() {
 func MySQLRam() {
 	for {
 		// Leer el archivo
-		cmd := exec.Command("cat", "/proc/ram_201314439")
+		cmd := exec.Command("cat", "/proc/ram_so1_1s2024")
 		output, err := cmd.Output()
 		if err != nil {
 			fmt.Println("Error al leer el archivo:", err)
@@ -86,7 +86,7 @@ func MySQLRam() {
 
 func RealTimeRam(w http.ResponseWriter, r *http.Request) {
 	// Lógica para obtener la información en tiempo real de RAM
-	cmd := exec.Command("cat", "/proc/ram_201314439")
+	cmd := exec.Command("cat", "/proc/ram_so1_1s2024")
 	output, err := cmd.Output()
 	if err != nil {
 		fmt.Println("Error al leer el archivo:", err)
@@ -154,7 +154,7 @@ func HistoryRam(w http.ResponseWriter, r *http.Request) {
 
 func ProcessTreePID() ([]string, error) {
 	// Ejecutar el comando para leer el archivo JSON
-	cmd := exec.Command("cat", "/proc/cpu_201314439")
+	cmd := exec.Command("cat", "/proc/cpu_so1_1s2024")
 	output, err := cmd.Output()
 	if err != nil {
 		return nil, fmt.Errorf("error al ejecutar el comando: %w", err)
@@ -215,7 +215,7 @@ func GetProcessData(w http.ResponseWriter, r *http.Request) {
 	pid := pidParts[1]
 
 	// Ejecutar el comando para leer el archivo JSON
-	cmd := exec.Command("cat", "/proc/cpu_201314439")
+	cmd := exec.Command("cat", "/proc/cpu_so1_1s2024")
 	output, err := cmd.Output()
 	if err != nil {
 		fmt.Println("Error al leer el archivo:", err)
@@ -260,6 +260,27 @@ func findRelated(procesos []Proceso, pid string, related *[]Proceso, visited map
 	}
 }
 
+func datacpu() {
+	cmd := exec.Command("bash", "-c", "sar -u 1 1 | tail -1")
+	out, err := cmd.Output()
+
+	if err != nil {
+		fmt.Println("Error:", err)
+		return
+	}
+
+	result := strings.Fields(string(out))
+	fmt.Println(result)
+	fmt.Println(result[0])
+	fmt.Println(result[1])
+	fmt.Println(result[2])
+	fmt.Println(result[3])
+	fmt.Println(result[4])
+	fmt.Println(result[5])
+	fmt.Println(result[6])
+	fmt.Println(result[7])
+}
+
 func main() {
 	// Ejecutar la rutina para cargar datos a MySQL
 	//go MySQLRam()
@@ -284,6 +305,7 @@ func main() {
 	mux.HandleFunc("/processtree/pid", func(w http.ResponseWriter, r *http.Request) {
 		// Lógica para obtener el historial de RAM
 		ProcessTreePIDHandler(w, r)
+		datacpu()
 	})
 
 	mux.HandleFunc("/processtree/data", func(w http.ResponseWriter, r *http.Request) {

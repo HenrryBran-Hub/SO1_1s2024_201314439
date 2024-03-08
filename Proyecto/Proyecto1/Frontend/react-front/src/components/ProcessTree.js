@@ -39,15 +39,9 @@ const ProcessTree = () => {
   // Manejar el clic en el botón
   const handleClick = () => {
     const selectedOption = selectedPid;
-    // Utilizando expresión regular
-    const numeroExtraido = selectedOption.match(/^PID_\d+/)[0];
     // Utilizando split
     const parts = selectedOption.split("_");
     const numeroExtraido2 = parts[0] + "_" + parts[1];
-
-    console.log(numeroExtraido); // Imprimirá "PID_25"
-    console.log(numeroExtraido2); // También imprimirá "PID_25"
-
     fetch(`http://localhost:8080/processtree/data?proceso=${numeroExtraido2}`)
       .then((response) => response.json())
       .then((processData) => {
