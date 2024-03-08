@@ -148,8 +148,11 @@ const SimulateProcess = () => {
             ))}
           </select>
         </div>
-        <button onClick={createProcess}>New</button>
+        <button onClick={createProcess} className="simulate-new">
+          New
+        </button>
         <button
+          className="simulate-kill"
           onClick={() =>
             selectedProcess &&
             processes.find((p) => p.pid === selectedProcess).estado !==
@@ -160,6 +163,7 @@ const SimulateProcess = () => {
           Kill
         </button>
         <button
+          className="simulate-stop"
           onClick={() =>
             selectedProcess &&
             processes.find((p) => p.pid === selectedProcess).estado !==
@@ -170,6 +174,7 @@ const SimulateProcess = () => {
           Stop
         </button>
         <button
+          className="simulate-resume"
           onClick={() =>
             selectedProcess &&
             processes.find((p) => p.pid === selectedProcess).estado !==
