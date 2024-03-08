@@ -41,22 +41,59 @@ const ProcessTree = () => {
     fetch(`http://localhost:8080/processtree/data?proceso=${selectedPid}`)
       .then((response) => response.json())
       .then((processData) => {
-        // Cambia 'data' a 'processData'
-        const nodes = new DataSet(processData);
+        // Crea un array de nodos
+        const nodes = new DataSet(
+          processData.map((proceso) => ({
+            id: proceso.PID,
+            label: `${proceso.PID}: ${proceso.name}`,
+            title: `
+              Name:${proceso.name}
+              PID:${proceso.PID}
+            `,
+          }))
+        );
+
+        // Crea un array de aristas (edges) para las relaciones padre-hijo
         const edges = new DataSet(
-          processData.flatMap((proceso, i) =>
+          processData.flatMap((proceso) =>
             proceso.hijos.map((hijo) => ({
-              from: i,
-              to: processData.findIndex((p) => p.PID === hijo.PID),
+              from: proceso.PID,
+              to: hijo.PID,
+              arrows: {
+                to: { enabled: true }, // Agrega flechas al final de las aristas
+              },
             }))
           )
         );
+
         const container = document.getElementById("network");
         const data = {
           nodes: nodes,
           edges: edges,
         };
-        const options = {};
+        const options = {
+          layout: {
+            hierarchical: {
+              direction: "UD", // Cambia la dirección del árbol de horizontal (LR) a vertical (UD)
+            },
+          },
+          edges: {
+            smooth: {
+              type: "cubicBezier", // Cambia el tipo de curva para las aristas
+            },
+          },
+          physics: {
+            enabled: true, // Habilita la simulación física
+            hierarchicalRepulsion: {
+              centralGravity: 0.0, // Ajusta la gravedad central para dispersar los nodos
+              springLength: 250, // Ajusta la longitud del resorte para las aristas
+              springConstant: 0.15, // Ajusta la constante del resorte
+              nodeDistance: 200, // Ajusta la distancia entre los nodos
+            },
+          },
+          height: "800px", // Ajusta la altura de la gráfica
+          width: "100%", // Ajusta el ancho de la gráfica
+        };
         setNetwork(new Network(container, data, options));
       })
       .catch((error) => {
