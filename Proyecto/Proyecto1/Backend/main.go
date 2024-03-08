@@ -252,8 +252,7 @@ func findRelated(procesos []Proceso, pid string, related *[]Proceso, visited map
 			visited[pid] = true
 			for _, hijo := range proceso.Hijos {
 				if !visited[hijo.PID] {
-					*related = append(*related, hijo)
-					visited[hijo.PID] = true
+					findRelated(procesos, hijo.PID, related, visited)
 				}
 			}
 		}
