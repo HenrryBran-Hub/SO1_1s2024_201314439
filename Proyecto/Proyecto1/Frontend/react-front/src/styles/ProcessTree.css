@@ -19,11 +19,19 @@ div {
 }
 
 .titulo:hover {
-  color: #e58908; /* Cambiar el color del texto al pasar el mouse sobre el h1 */
+  color: #0e0d0d; /* Cambiar el color del texto al pasar el mouse sobre el h1 */
   cursor: pointer; /* Cambiar el cursor al pasar el mouse sobre el h1 */
 }
 
-.container-img {
-  width: 60%;
-  align-items: center;
+.nav-button-process {
+  padding: 10px 50px; /* Ajustar el relleno según sea necesario */
+  text-decoration: none;
+  color: white;
+  background-color: #007bff;
+  border: none;
+  width: 500px; /* Establecer un ancho fijo para todos los botones */
+}
+
+.nav-button-process:hover {
+  background-color: #e58908; /* Cambiar el color de fondo al pasar el mouse */
 }

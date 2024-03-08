@@ -170,9 +170,10 @@ func ProcessTreePID() ([]string, error) {
 	var pids []string
 	if processes, ok := data["procesos"].([]interface{}); ok {
 		for _, process := range processes {
-			if pidMap, ok := process.(map[string]interface{})["PID"]; ok {
-				if pid, ok := pidMap.(string); ok {
-					pids = append(pids, "PID_"+pid)
+			if processMap, ok := process.(map[string]interface{}); ok {
+				if pid, ok := processMap["PID"].(string); ok {
+					name := processMap["name"].(string)
+					pids = append(pids, fmt.Sprintf("PID_%s_(%s)", pid, name))
 				}
 			}
 		}

@@ -27,7 +27,7 @@ const ProcessTree = () => {
           setMsgError("Error de conexión. Inténtelo de nuevo más tarde.");
           console.error("Error de conexión:", error);
         });
-    }, 10000);
+    }, 5000);
     return () => clearInterval(interval);
   }, []);
 
@@ -38,7 +38,17 @@ const ProcessTree = () => {
 
   // Manejar el clic en el botón
   const handleClick = () => {
-    fetch(`http://localhost:8080/processtree/data?proceso=${selectedPid}`)
+    const selectedOption = selectedPid;
+    // Utilizando expresión regular
+    const numeroExtraido = selectedOption.match(/^PID_\d+/)[0];
+    // Utilizando split
+    const parts = selectedOption.split("_");
+    const numeroExtraido2 = parts[0] + "_" + parts[1];
+
+    console.log(numeroExtraido); // Imprimirá "PID_25"
+    console.log(numeroExtraido2); // También imprimirá "PID_25"
+
+    fetch(`http://localhost:8080/processtree/data?proceso=${numeroExtraido2}`)
       .then((response) => response.json())
       .then((processData) => {
         // Crea un array de nodos
@@ -109,14 +119,16 @@ const ProcessTree = () => {
       <NavBar />
       <div className="container">
         <h1 className="titulo">Arbol de Procesos</h1>
-        <select onChange={handleSelectPid}>
+        <select onChange={handleSelectPid} className="nav-button-process">
           {pids.map((pid, index) => (
             <option key={index} value={pid}>
               {pid}
             </option>
           ))}
         </select>
-        <button onClick={handleClick}>Mostrar árbol de procesos</button>
+        <button onClick={handleClick} className="nav-button-process">
+          Mostrar árbol de procesos
+        </button>
         {/* Mostrar un mensaje de error si hay un error de conexión */}
         {errorDeConexion && <div className="error-message">{msgError}</div>}
         <div id="network"></div>
