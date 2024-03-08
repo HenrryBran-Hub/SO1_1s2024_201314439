@@ -41,7 +41,11 @@ const SimulateProcess = () => {
     setProcesses([...processes, newProcess]);
     setSelectedProcess(newProcess.pid);
     nodes.add([
-      { id: newProcess.pid + "new", label: "New", color: "blue" },
+      {
+        id: newProcess.pid + "new",
+        label: "New\n" + processName,
+        color: "blue",
+      },
       { id: newProcess.pid + "ready", label: "Ready", color: "blue" },
       { id: newProcess.pid + "running", label: "Running", color: "green" },
     ]);
@@ -60,6 +64,7 @@ const SimulateProcess = () => {
       },
     ]);
     network.selectNodes([newProcess.pid + "running"]);
+    nodes.update({ id: newProcess.pid + "running", color: "lime" });
   };
 
   const killProcess = (pid) => {
@@ -74,6 +79,10 @@ const SimulateProcess = () => {
       label: "Exit",
     });
     network.selectNodes([pid + "terminated"]);
+    nodes.update({ id: pid + "new", color: "blue" });
+    nodes.update({ id: pid + "ready", color: "blue" });
+    nodes.update({ id: pid + "running", color: "blue" });
+    nodes.update({ id: pid + "waiting", color: "blue" });
   };
 
   const stopProcess = (pid) => {
@@ -104,6 +113,8 @@ const SimulateProcess = () => {
       ]);
     }
     network.selectNodes([pid + "ready"]);
+    nodes.update({ id: pid + "running", color: "blue" });
+    nodes.update({ id: pid + "ready", color: "lime" });
   };
 
   const resumeProcess = (pid) => {
@@ -119,6 +130,8 @@ const SimulateProcess = () => {
       ]);
     }
     network.selectNodes([pid + "running"]);
+    nodes.update({ id: pid + "ready", color: "blue" });
+    nodes.update({ id: pid + "running", color: "lime" });
   };
 
   return (
