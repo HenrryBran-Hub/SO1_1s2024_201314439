@@ -27,3 +27,21 @@ div {
   width: 60%;
   align-items: center;
 }
+
+.simulate {
+  padding: 10px; /* Ajustar el relleno según sea necesario */
+  text-decoration: none;
+  color: white;
+  background-color: #007bff;
+  border: none;
+  width: 300px; /* Ajusta el ancho según sea necesario */
+  height: 40px; /* Ajusta la altura según sea necesario */
+  margin-right: 20px;
+  margin-bottom: 10px; /* Añade margen inferior para separación */
+  box-sizing: border-box; /* Asegura que el padding y el borde estén incluidos en el tamaño total */
+  resize: "none";
+}
+
+.simulate:hover {
+  background-color: #e58908; /* Cambiar el color de fondo al pasar el mouse */
+}

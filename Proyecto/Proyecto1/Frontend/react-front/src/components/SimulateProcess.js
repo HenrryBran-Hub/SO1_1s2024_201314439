@@ -128,20 +128,26 @@ const SimulateProcess = () => {
         <h1 className="titulo">
           Simulacion de Cambio de Estados en los Procesos
         </h1>
-        <textarea
-          value={processName}
-          onChange={(e) => setProcessName(e.target.value)}
-        />
-        <select
-          value={selectedProcess}
-          onChange={(e) => setSelectedProcess(e.target.value)}
-        >
-          {processes.map((process) => (
-            <option key={process.pid} value={process.pid}>
-              {process.nombre}
-            </option>
-          ))}
-        </select>
+        <div>
+          <textarea
+            className="simulate"
+            value={processName}
+            onChange={(e) => setProcessName(e.target.value)}
+          />
+        </div>
+        <div>
+          <select
+            className="simulate"
+            value={selectedProcess}
+            onChange={(e) => setSelectedProcess(e.target.value)}
+          >
+            {processes.map((process) => (
+              <option key={process.pid} value={process.pid}>
+                {process.nombre}
+              </option>
+            ))}
+          </select>
+        </div>
         <button onClick={createProcess}>New</button>
         <button
           onClick={() =>
