@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
+	"strings"
 	"time"
 
 	"github.com/gorilla/handlers"
@@ -17,6 +18,19 @@ import (
 )
 
 var db *sql.DB
+
+type Proceso struct {
+	PID    string    `json:"PID"`
+	Name   string    `json:"name"`
+	State  string    `json:"state"`
+	Memory string    `json:"memory"`
+	UserID string    `json:"userid"`
+	Hijos  []Proceso `json:"hijos"`
+}
+
+type Procesos struct {
+	Procesos []Proceso `json:"procesos"`
+}
 
 func init() {
 	// Abre la conexión a la base de datos
@@ -187,6 +201,65 @@ func ProcessTreePIDHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write(response)
 }
 
+func GetProcessData(w http.ResponseWriter, r *http.Request) {
+	// Obtener el valor del campo "proceso" de la consulta
+	processID := r.URL.Query().Get("proceso")
+
+	// Separar el número del PID
+	pidParts := strings.Split(processID, "_")
+	if len(pidParts) != 2 {
+		http.Error(w, "El formato del PID no es válido", http.StatusBadRequest)
+		return
+	}
+	pid := pidParts[1]
+
+	// Ejecutar el comando para leer el archivo JSON
+	cmd := exec.Command("cat", "/proc/cpu_201314439")
+	output, err := cmd.Output()
+	if err != nil {
+		fmt.Println("Error al leer el archivo:", err)
+		http.Error(w, "Error al leer el archivo", http.StatusInternalServerError)
+		return
+	}
+
+	// Decodificar el JSON
+	var data map[string]interface{}
+	if err := json.Unmarshal(output, &data); err != nil {
+		http.Error(w, "Error al decodificar el JSON", http.StatusInternalServerError)
+		return
+	}
+
+	// Buscar el proceso con el PID correspondiente
+	var procesos Procesos
+	json.Unmarshal(output, &procesos)
+
+	var related []Proceso
+	var visited = make(map[string]bool)
+	findRelated(procesos.Procesos, pid, &related, visited)
+
+	relatedJson, _ := json.MarshalIndent(related, "", "\t")
+	//fmt.Println(string(relatedJson))
+
+	// Escribir la respuesta
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(relatedJson)
+}
+
+func findRelated(procesos []Proceso, pid string, related *[]Proceso, visited map[string]bool) {
+	for _, proceso := range procesos {
+		if proceso.PID == pid && !visited[pid] {
+			*related = append(*related, proceso)
+			visited[pid] = true
+			for _, hijo := range proceso.Hijos {
+				if !visited[hijo.PID] {
+					*related = append(*related, hijo)
+					visited[hijo.PID] = true
+				}
+			}
+		}
+	}
+}
+
 func main() {
 	// Ejecutar la rutina para cargar datos a MySQL
 	//go MySQLRam()
@@ -211,6 +284,11 @@ func main() {
 	mux.HandleFunc("/processtree/pid", func(w http.ResponseWriter, r *http.Request) {
 		// Lógica para obtener el historial de RAM
 		ProcessTreePIDHandler(w, r)
+	})
+
+	mux.HandleFunc("/processtree/data", func(w http.ResponseWriter, r *http.Request) {
+		// Lógica para obtener el historial de RAM
+		GetProcessData(w, r)
 	})
 
 	// Iniciar el servidor HTTP con el ServeMux
