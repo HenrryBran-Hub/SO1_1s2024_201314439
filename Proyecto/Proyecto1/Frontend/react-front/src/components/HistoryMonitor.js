@@ -148,32 +148,20 @@ const HistoryMonitor = () => {
     <div>
       <NavBar />
       <h1 className="titulo">Monitoreo Historico</h1>
-      <table style={{ width: "100%" }}>
-        <tr>
-          <td style={{ width: "50%", padding: "20px" }}>
-            <div className="container">
-              {errorDeConexion && (
-                <div className="error-message">{msgerror}</div>
-              )}
-              <h4 className="titulo-dos">Memoria Ram</h4>
-              <div className="chart-container-graf">
-                <canvas id="lineChartRAM" width="800" height="400"></canvas>
-              </div>
-            </div>
-          </td>
-          <td style={{ width: "50%", padding: "20px" }}>
-            <div className="container">
-              {errorDeConexion && (
-                <div className="error-message">{msgerror}</div>
-              )}
-              <h4 className="titulo-dos">CPU</h4>
-              <div className="chart-container-graf">
-                <canvas id="lineChartCPU" width="800" height="400"></canvas>
-              </div>
-            </div>
-          </td>
-        </tr>
-      </table>
+      <div className="container">
+        {errorDeConexion && <div className="error-message">{msgerror}</div>}
+        <h4 className="titulo-dos">Memoria Ram</h4>
+        <div className="chart-container-graf">
+          <canvas id="lineChartRAM" width="800" height="400"></canvas>
+        </div>
+      </div>
+      <div className="container">
+        {errorDeConexion && <div className="error-message">{msgerror}</div>}
+        <h4 className="titulo-dos">CPU</h4>
+        <div className="chart-container-graf">
+          <canvas id="lineChartCPU" width="800" height="400"></canvas>
+        </div>
+      </div>
     </div>
   );
 };

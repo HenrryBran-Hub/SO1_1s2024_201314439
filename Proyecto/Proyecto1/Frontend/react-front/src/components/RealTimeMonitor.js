@@ -119,7 +119,7 @@ const RealTimeMonitor = () => {
   // Función para actualizar el gráfico de dona
   const actualizarGraficoDonaCPU = () => {
     if (donaChartRefCPU.current) {
-      donaChartRefCPU.current.data.datasets[0].data = [cpuLibre, cpuOcupada];
+      donaChartRefCPU.current.data.datasets[0].data = [cpuOcupada, cpuLibre];
       donaChartRefCPU.current.update();
     }
   };
@@ -133,7 +133,7 @@ const RealTimeMonitor = () => {
         labels: ["Lleno", "Vacio"],
         datasets: [
           {
-            data: [cpuLibre, cpuOcupada],
+            data: [cpuOcupada, cpuLibre],
             backgroundColor: ["#36a2eb", "#ff6384"],
           },
         ],
@@ -142,7 +142,7 @@ const RealTimeMonitor = () => {
 
     // Devuelve una función de limpieza para detener el intervalo cuando el componente se desmonta
     return () => donaChartRefCPU.current.destroy();
-  }, [cpuLibre, cpuOcupada]);
+  }, [cpuOcupada, cpuLibre]);
 
   return (
     <div>
@@ -184,10 +184,10 @@ const RealTimeMonitor = () => {
           <td style={{ width: "50%", padding: "20px" }}>
             {/* Repetir el mismo contenido aquí */}
             <div className="container">
-              <h1 className="titulo">CPU</h1>
               {errorDeConexion && (
                 <div className="error-message">{msgerror}</div>
               )}
+              <h1 className="titulo">CPU</h1>
               <div className="result-container">
                 <label>cpu libre:</label>
                 <span>{cpuLibre} %</span>
@@ -197,7 +197,7 @@ const RealTimeMonitor = () => {
                 <span>{cpuOcupada} %</span>
               </div>
               <div className="chart-container">
-                <canvas id="donaChartCPU" width="300" height="300"></canvas>
+                <canvas id="donaChartCPU" className="imagen-ram-real"></canvas>
               </div>
             </div>
           </td>

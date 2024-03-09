@@ -30,4 +30,33 @@ div {
 .chart-container {
   width: 300px; /* Ancho fijo */
   height: 300px; /* Alto fijo */
+  width: 300px;
+  height: 300px;
+  margin: 20px auto; /* Margen de 20px arriba y abajo, y centrado horizontalmente */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%; /* Ancho del 100% para que se ajuste al contenedor */
+  height: 100%; /* Alto del 100% para que se ajuste al contenedor */
+  object-fit: cover; /* Para ajustar la imagen al contenedor */
+  text-align: center; /* Alinear el texto al centro */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.imagen-ram-real {
+  width: 300px;
+  height: 300px;
+  margin: 20px auto; /* Margen de 20px arriba y abajo, y centrado horizontalmente */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%; /* Ancho del 100% para que se ajuste al contenedor */
+  height: 100%; /* Alto del 100% para que se ajuste al contenedor */
+  object-fit: cover; /* Para ajustar la imagen al contenedor */
+  text-align: center; /* Alinear el texto al centro */
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }

@@ -80,11 +80,11 @@ func MySQLRAM() {
 		_, err = db.Exec("INSERT INTO ram_data (memoria_libre, memoria_total, memoria_ocupada, fecha_hora) VALUES (?, ?, ?, ?)",
 			memoriaLibre, data["memoria_total"], memoriaOcupada, horaActual)
 		if err != nil {
-			fmt.Println("Error al insertar datos en la base de datos:", err)
+			fmt.Println("Error al insertar datos en la base de datos RAM:", err)
 			continue
 		}
 
-		fmt.Println("Datos guardados en la base de datos.")
+		fmt.Println("Datos guardados en la base de datos RAM.")
 
 		// Esperar un segundo antes de la próxima lectura
 		time.Sleep(time.Second)
@@ -300,7 +300,6 @@ func MySQLCPU() {
 				guest_nice, _ := strconv.ParseUint(fields[10], 10, 64)
 
 				idlePercentage = float64(idle) * 100.0 / float64(user+nice+system+idle+iowait+irql+softirq+steal+guest+guest_nice)
-				fmt.Printf("Porcentaje de tiempo ocioso de la CPU: %.3f%%\n", idlePercentage)
 				break
 			}
 		}
@@ -324,11 +323,11 @@ func MySQLCPU() {
 		_, err = db.Exec("INSERT INTO cpu_data (cpu_libre, cpu_ocupada, fecha_hora) VALUES (?, ?, ?)",
 			idlePercentage, cpuOcupada, horaActual)
 		if err != nil {
-			fmt.Println("Error al insertar datos en la base de datos:", err)
+			fmt.Println("Error al insertar datos en la base de datos CPU:", err)
 			continue
 		}
 
-		fmt.Println("Datos guardados en la base de datos.")
+		fmt.Println("Datos guardados en la base de datos CPU.")
 
 		// Esperar un segundo antes de la próxima lectura
 		time.Sleep(time.Second)
