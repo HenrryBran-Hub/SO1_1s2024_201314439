@@ -27,3 +27,105 @@ div {
   width: 60%;
   align-items: center;
 }
+
+.simulate {
+  padding: 10px; /* Ajustar el relleno según sea necesario */
+  text-decoration: none;
+  color: white;
+  background-color: #007bff;
+  border: none;
+  width: 300px; /* Ajusta el ancho según sea necesario */
+  height: 40px; /* Ajusta la altura según sea necesario */
+  margin-right: 20px;
+  margin-bottom: 10px; /* Añade margen inferior para separación */
+  box-sizing: border-box; /* Asegura que el padding y el borde estén incluidos en el tamaño total */
+  resize: "none";
+}
+
+.simulate:hover {
+  background-color: #e58908; /* Cambiar el color de fondo al pasar el mouse */
+}
+
+.simulate-new {
+  padding: 10px; /* Ajustar el relleno según sea necesario */
+  text-decoration: none;
+  color: white;
+  background-color: #007bff;
+  border: none;
+  width: 100px; /* Ajusta el ancho según sea necesario */
+  height: 40px; /* Ajusta la altura según sea necesario */
+  margin-right: 20px;
+  margin-bottom: 10px; /* Añade margen inferior para separación */
+  box-sizing: border-box; /* Asegura que el padding y el borde estén incluidos en el tamaño total */
+  resize: "none";
+}
+
+.simulate-new:hover {
+  background-color: #e58908; /* Cambiar el color de fondo al pasar el mouse */
+}
+
+.simulate-kill {
+  padding: 10px; /* Ajustar el relleno según sea necesario */
+  text-decoration: none;
+  color: white;
+  background-color: #f30606;
+  border: none;
+  width: 100px; /* Ajusta el ancho según sea necesario */
+  height: 40px; /* Ajusta la altura según sea necesario */
+  margin-right: 20px;
+  margin-bottom: 10px; /* Añade margen inferior para separación */
+  box-sizing: border-box; /* Asegura que el padding y el borde estén incluidos en el tamaño total */
+  resize: "none";
+}
+
+.simulate-kill:hover {
+  background-color: #e58908; /* Cambiar el color de fondo al pasar el mouse */
+}
+
+.simulate-stop {
+  padding: 10px; /* Ajustar el relleno según sea necesario */
+  text-decoration: none;
+  color: white;
+  background-color: #fceb04;
+  border: none;
+  width: 100px; /* Ajusta el ancho según sea necesario */
+  height: 40px; /* Ajusta la altura según sea necesario */
+  margin-right: 20px;
+  margin-bottom: 10px; /* Añade margen inferior para separación */
+  box-sizing: border-box; /* Asegura que el padding y el borde estén incluidos en el tamaño total */
+  resize: "none";
+}
+
+.simulate-stop:hover {
+  background-color: #e58908; /* Cambiar el color de fondo al pasar el mouse */
+}
+
+.simulate-resume {
+  padding: 10px; /* Ajustar el relleno según sea necesario */
+  text-decoration: none;
+  color: white;
+  background-color: #3df306;
+  border: none;
+  width: 100px; /* Ajusta el ancho según sea necesario */
+  height: 40px; /* Ajusta la altura según sea necesario */
+  margin-right: 20px;
+  margin-bottom: 10px; /* Añade margen inferior para separación */
+  box-sizing: border-box; /* Asegura que el padding y el borde estén incluidos en el tamaño total */
+  resize: "none";
+}
+
+.simulate-resume:hover {
+  background-color: #e58908; /* Cambiar el color de fondo al pasar el mouse */
+}
+
+.img-container {
+  width: 1000px; /* Ancho de la imagen */
+  height: 50px; /* Alto de la imagen */
+  margin: 20px auto; /* Margen de 20px arriba y abajo, y centrado horizontalmente */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%; /* Ancho del 100% para que se ajuste al contenedor */
+  height: 100%; /* Alto del 100% para que se ajuste al contenedor */
+  object-fit: cover; /* Para ajustar la imagen al contenedor */
+}

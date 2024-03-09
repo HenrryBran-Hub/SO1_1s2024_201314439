@@ -19,11 +19,31 @@ div {
 }
 
 .titulo:hover {
-  color: #e58908; /* Cambiar el color del texto al pasar el mouse sobre el h1 */
+  color: #0e0d0d; /* Cambiar el color del texto al pasar el mouse sobre el h1 */
   cursor: pointer; /* Cambiar el cursor al pasar el mouse sobre el h1 */
 }
 
-.container-img {
-  width: 60%;
+.nav-button-process {
+  padding: 10px 50px; /* Ajustar el relleno según sea necesario */
+  text-decoration: none;
+  color: white;
+  background-color: #007bff;
+  border: none;
+  width: 500px; /* Establecer un ancho fijo para todos los botones */
+}
+
+.nav-button-process:hover {
+  background-color: #e58908; /* Cambiar el color de fondo al pasar el mouse */
+}
+
+.img-container {
+  width: 1000px; /* Ancho de la imagen */
+  height: 50px; /* Alto de la imagen */
+  margin: 20px auto; /* Margen de 20px arriba y abajo, y centrado horizontalmente */
+  display: flex;
+  justify-content: center;
   align-items: center;
+  width: 100%; /* Ancho del 100% para que se ajuste al contenedor */
+  height: 100%; /* Alto del 100% para que se ajuste al contenedor */
+  object-fit: cover; /* Para ajustar la imagen al contenedor */
 }
