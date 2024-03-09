@@ -117,3 +117,15 @@ div {
 .simulate-resume:hover {
   background-color: #e58908; /* Cambiar el color de fondo al pasar el mouse */
 }
+
+.img-container {
+  width: 1000px; /* Ancho de la imagen */
+  height: 50px; /* Alto de la imagen */
+  margin: 20px auto; /* Margen de 20px arriba y abajo, y centrado horizontalmente */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%; /* Ancho del 100% para que se ajuste al contenedor */
+  height: 100%; /* Alto del 100% para que se ajuste al contenedor */
+  object-fit: cover; /* Para ajustar la imagen al contenedor */
+}

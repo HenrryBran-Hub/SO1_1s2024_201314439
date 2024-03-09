@@ -125,7 +125,7 @@ const ProcessTree = () => {
         </button>
         {/* Mostrar un mensaje de error si hay un error de conexión */}
         {errorDeConexion && <div className="error-message">{msgError}</div>}
-        <div id="network"></div>
+        <div id="network" class="img-container"></div>
       </div>
     </div>
   );

@@ -197,8 +197,8 @@ const SimulateProcess = () => {
         >
           Resume
         </button>
-        <div id="mynetwork" style={{ width: "800px", height: "600px" }}></div>
       </div>
+      <div id="mynetwork" class="img-container"></div>
     </div>
   );
 };

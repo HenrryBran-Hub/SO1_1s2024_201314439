@@ -1,0 +1,1 @@
+savedcmd_/home/henrrybran/Documents/Modules/CPU/cpu.ko := ld -r -m elf_x86_64 -z noexecstack --build-id=sha1  -T scripts/module.lds -o /home/henrrybran/Documents/Modules/CPU/cpu.ko /home/henrrybran/Documents/Modules/CPU/cpu.o /home/henrrybran/Documents/Modules/CPU/cpu.mod.o;  make -f ./arch/x86/Makefile.postlink /home/henrrybran/Documents/Modules/CPU/cpu.ko

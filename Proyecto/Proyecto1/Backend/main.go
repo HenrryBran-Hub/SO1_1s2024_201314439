@@ -1,12 +1,14 @@
 package main
 
 import (
+	"bufio"
 	"database/sql"
 	"encoding/json"
 	"fmt"
 	"net/http"
 	"os"
 	"os/exec"
+	"strconv"
 	"strings"
 	"time"
 
@@ -28,6 +30,11 @@ type Proceso struct {
 	Hijos  []Proceso `json:"hijos"`
 }
 
+type CPUData struct {
+	CPULibre   float64 `json:"cpu_libre"`
+	CPUOcupada float64 `json:"cpu_ocupada"`
+}
+
 type Procesos struct {
 	Procesos []Proceso `json:"procesos"`
 }
@@ -42,7 +49,7 @@ func init() {
 	}
 }
 
-func MySQLRam() {
+func MySQLRAM() {
 	for {
 		// Leer el archivo
 		cmd := exec.Command("cat", "/proc/ram_so1_1s2024")
@@ -84,7 +91,7 @@ func MySQLRam() {
 	}
 }
 
-func RealTimeRam(w http.ResponseWriter, r *http.Request) {
+func RealTimeRAM(w http.ResponseWriter, r *http.Request) {
 	// Lógica para obtener la información en tiempo real de RAM
 	cmd := exec.Command("cat", "/proc/ram_so1_1s2024")
 	output, err := cmd.Output()
@@ -99,7 +106,7 @@ func RealTimeRam(w http.ResponseWriter, r *http.Request) {
 	w.Write(output)
 }
 
-func HistoryRam(w http.ResponseWriter, r *http.Request) {
+func HistoryRAM(w http.ResponseWriter, r *http.Request) {
 	// Lógica para obtener el historial de RAM
 	db, err := sql.Open("mysql", "root:123abc@tcp(localhost:3306)/KERNEL")
 	if err != nil {
@@ -260,56 +267,224 @@ func findRelated(procesos []Proceso, pid string, related *[]Proceso, visited map
 	}
 }
 
-func datacpu() {
-	cmd := exec.Command("bash", "-c", "sar -u 1 1 | tail -1")
-	out, err := cmd.Output()
+func MySQLCPU() {
+	for {
+		// Leer el archivo
+		cmd := exec.Command("cat", "/proc/stat")
+		stdout, err := cmd.StdoutPipe()
+		if err != nil {
+			fmt.Println("Error al crear el canal de salida:", err)
+			return
+		}
+		if err := cmd.Start(); err != nil {
+			fmt.Println("Error al iniciar el comando:", err)
+			return
+		}
 
+		var idlePercentage float64
+
+		scanner := bufio.NewScanner(stdout)
+		for scanner.Scan() {
+			line := scanner.Text()
+			fields := strings.Fields(line)
+			if fields[0] == "cpu" {
+				user, _ := strconv.ParseUint(fields[1], 10, 64)
+				nice, _ := strconv.ParseUint(fields[2], 10, 64)
+				system, _ := strconv.ParseUint(fields[3], 10, 64)
+				idle, _ := strconv.ParseUint(fields[4], 10, 64)
+				iowait, _ := strconv.ParseUint(fields[5], 10, 64)
+				irql, _ := strconv.ParseUint(fields[6], 10, 64)
+				softirq, _ := strconv.ParseUint(fields[7], 10, 64)
+				steal, _ := strconv.ParseUint(fields[8], 10, 64)
+				guest, _ := strconv.ParseUint(fields[9], 10, 64)
+				guest_nice, _ := strconv.ParseUint(fields[10], 10, 64)
+
+				idlePercentage = float64(idle) * 100.0 / float64(user+nice+system+idle+iowait+irql+softirq+steal+guest+guest_nice)
+				fmt.Printf("Porcentaje de tiempo ocioso de la CPU: %.3f%%\n", idlePercentage)
+				break
+			}
+		}
+
+		if err := scanner.Err(); err != nil {
+			fmt.Println("Error al leer la salida del comando:", err)
+		}
+
+		if err := cmd.Wait(); err != nil {
+			fmt.Println("Error al esperar la finalización del comando:", err)
+		}
+
+		// Calcular los porcentajes de memoria
+		cpuOcupada := 100 - idlePercentage
+		currentTime := time.Now()
+
+		// Formatear el tiempo actual como una cadena en formato "5:33:05"
+		horaActual := currentTime.Format("15:04:05")
+
+		// Insertar los datos en la base de datos con la hora actual como cadena
+		_, err = db.Exec("INSERT INTO cpu_data (cpu_libre, cpu_ocupada, fecha_hora) VALUES (?, ?, ?)",
+			idlePercentage, cpuOcupada, horaActual)
+		if err != nil {
+			fmt.Println("Error al insertar datos en la base de datos:", err)
+			continue
+		}
+
+		fmt.Println("Datos guardados en la base de datos.")
+
+		// Esperar un segundo antes de la próxima lectura
+		time.Sleep(time.Second)
+	}
+}
+
+func RealTimeCPU(w http.ResponseWriter, r *http.Request) {
+	// Lógica para obtener la información en tiempo real de RAM
+	cmd := exec.Command("cat", "/proc/stat")
+	stdout, err := cmd.StdoutPipe()
 	if err != nil {
-		fmt.Println("Error:", err)
+		fmt.Println("Error al crear el canal de salida:", err)
+		return
+	}
+	if err := cmd.Start(); err != nil {
+		fmt.Println("Error al iniciar el comando:", err)
 		return
 	}
 
-	result := strings.Fields(string(out))
-	fmt.Println(result)
-	fmt.Println(result[0])
-	fmt.Println(result[1])
-	fmt.Println(result[2])
-	fmt.Println(result[3])
-	fmt.Println(result[4])
-	fmt.Println(result[5])
-	fmt.Println(result[6])
-	fmt.Println(result[7])
+	var idlePercentage float64
+
+	scanner := bufio.NewScanner(stdout)
+	for scanner.Scan() {
+		line := scanner.Text()
+		fields := strings.Fields(line)
+		if fields[0] == "cpu" {
+			user, _ := strconv.ParseUint(fields[1], 10, 64)
+			nice, _ := strconv.ParseUint(fields[2], 10, 64)
+			system, _ := strconv.ParseUint(fields[3], 10, 64)
+			idle, _ := strconv.ParseUint(fields[4], 10, 64)
+			iowait, _ := strconv.ParseUint(fields[5], 10, 64)
+			irql, _ := strconv.ParseUint(fields[6], 10, 64)
+			softirq, _ := strconv.ParseUint(fields[7], 10, 64)
+			steal, _ := strconv.ParseUint(fields[8], 10, 64)
+			guest, _ := strconv.ParseUint(fields[9], 10, 64)
+			guest_nice, _ := strconv.ParseUint(fields[10], 10, 64)
+
+			idlePercentage = float64(idle) * 100.0 / float64(user+nice+system+idle+iowait+irql+softirq+steal+guest+guest_nice)
+			fmt.Printf("Porcentaje de tiempo ocioso de la CPU: %.3f%%\n", idlePercentage)
+			break
+		}
+	}
+
+	if err := scanner.Err(); err != nil {
+		fmt.Println("Error al leer la salida del comando:", err)
+	}
+
+	if err := cmd.Wait(); err != nil {
+		fmt.Println("Error al esperar la finalización del comando:", err)
+	}
+
+	// Calcular los porcentajes de memoria
+	cpuOcupada := 100 - idlePercentage
+
+	// Crear un mapa con los datos
+	data := CPUData{
+		CPULibre:   idlePercentage,
+		CPUOcupada: cpuOcupada,
+	}
+
+	jsonData, err := json.Marshal(data)
+	if err != nil {
+		http.Error(w, "Error al convertir la estructura en JSON", http.StatusInternalServerError)
+		return
+	}
+
+	// Escribir la respuesta HTTP con el JSON
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(jsonData)
+}
+
+func HistoryCPU(w http.ResponseWriter, r *http.Request) {
+	// Lógica para obtener el historial de RAM
+	db, err := sql.Open("mysql", "root:123abc@tcp(localhost:3306)/KERNEL")
+	if err != nil {
+		fmt.Println("Error al conectar a la base de datos:", err)
+		http.Error(w, "Error al conectar a la base de datos", http.StatusInternalServerError)
+		return
+	}
+	defer db.Close()
+
+	// Consultar los últimos 25 registros de la tabla ram_data
+	rows, err := db.Query("SELECT cpu_libre, cpu_ocupada, fecha_hora FROM (SELECT * FROM cpu_data ORDER BY id DESC LIMIT 25) sub ORDER BY id ASC")
+	if err != nil {
+		fmt.Println("Error al consultar la base de datos:", err)
+		http.Error(w, "Error al consultar la base de datos", http.StatusInternalServerError)
+		return
+	}
+	defer rows.Close()
+
+	// Crear una estructura para almacenar los datos
+	type Registro struct {
+		CPUlibre  float64 `json:"cpu_libre"`
+		CPUcupada float64 `json:"cpu_ocupada"`
+		FechaHora string  `json:"fecha_hora"`
+	}
+
+	var registros []Registro
+
+	// Iterar sobre los registros y guardarlos en la estructura
+	for rows.Next() {
+		var registro Registro
+		err := rows.Scan(&registro.CPUlibre, &registro.CPUcupada, &registro.FechaHora)
+		if err != nil {
+			fmt.Println("Error al escanear el registro:", err)
+			http.Error(w, "Error al escanear el registro", http.StatusInternalServerError)
+			return
+		}
+		registros = append(registros, registro)
+	}
+
+	// Verificar si hubo un error durante el escaneo de los registros
+	if err := rows.Err(); err != nil {
+		fmt.Println("Error al obtener los registros:", err)
+		http.Error(w, "Error al obtener los registros", http.StatusInternalServerError)
+		return
+	}
+
+	// Convertir los registros a formato JSON y enviar la respuesta
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(registros)
 }
 
 func main() {
 	// Ejecutar la rutina para cargar datos a MySQL
-	//go MySQLRam()
+	go MySQLRAM()
+	go MySQLCPU()
 
-	// Mantener la rutina principal en espera
 	// Crear un nuevo ServeMux
 	mux := http.NewServeMux()
-	/*
-		// Endpoint para obtener la información en tiempo real de RAM
-		mux.HandleFunc("/realtimemonitor/ram", func(w http.ResponseWriter, r *http.Request) {
-			// Lógica para obtener la información en tiempo real de RAM
-			RealTimeRam(w, r)
-		})
-
-		// Endpoint para obtener el historial de RAM
-		mux.HandleFunc("/historymonitor/ram", func(w http.ResponseWriter, r *http.Request) {
-			// Lógica para obtener el historial de RAM
-			HistoryRam(w, r)
-		})
-	*/
-	// Endpoint para obtener los PID del árbol de procesos
-	mux.HandleFunc("/processtree/pid", func(w http.ResponseWriter, r *http.Request) {
-		// Lógica para obtener el historial de RAM
-		ProcessTreePIDHandler(w, r)
-		datacpu()
+	// Endpoint para obtener la información en tiempo real de RAM
+	mux.HandleFunc("/realtimemonitor/ram", func(w http.ResponseWriter, r *http.Request) {
+		RealTimeRAM(w, r)
 	})
 
+	// Endpoint para obtener la información en tiempo real de CPU
+	mux.HandleFunc("/realtimemonitor/cpu", func(w http.ResponseWriter, r *http.Request) {
+		RealTimeCPU(w, r)
+	})
+
+	// Endpoint para obtener el historial de RAM
+	mux.HandleFunc("/historymonitor/ram", func(w http.ResponseWriter, r *http.Request) {
+		HistoryRAM(w, r)
+	})
+
+	// Endpoint para obtener el historial de RAM
+	mux.HandleFunc("/historymonitor/cpu", func(w http.ResponseWriter, r *http.Request) {
+		HistoryCPU(w, r)
+	})
+
+	// Endpoint para obtener los PID del árbol de procesos
+	mux.HandleFunc("/processtree/pid", func(w http.ResponseWriter, r *http.Request) {
+		ProcessTreePIDHandler(w, r)
+	})
+	// Endpoint para obtener los json PID del árbol de procesos
 	mux.HandleFunc("/processtree/data", func(w http.ResponseWriter, r *http.Request) {
-		// Lógica para obtener el historial de RAM
 		GetProcessData(w, r)
 	})
 

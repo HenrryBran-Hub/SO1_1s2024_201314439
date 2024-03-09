@@ -12,7 +12,10 @@ const RealTimeMonitor = () => {
   const [memoriaVacia, setMemoriaVacia] = useState(0);
   const [msgerror, setMsgError] = useState("");
   const [errorDeConexion, setErrorDeConexion] = useState(false); // Estado para manejar errores de conexión
-  const donaChartRef = useRef(null); // Usar useRef en lugar de let
+  const donaChartRefRAM = useRef(null); // Usar useRef en lugar de let
+  const [cpuLibre, setCPULibre] = useState(0);
+  const [cpuOcupada, setCPUOcupada] = useState(0);
+  const donaChartRefCPU = useRef(null);
 
   useEffect(() => {
     const intervalId = setInterval(() => {
@@ -40,7 +43,7 @@ const RealTimeMonitor = () => {
           setMemoriaTotal(memoriaTotal);
           setMemoriaVacia(memoriaVacia);
           setMemoriaLlena(memoriaLlena);
-          actualizarGraficoDona();
+          actualizarGraficoDonaRAM();
           console.log(data);
         })
         .catch((error) => {
@@ -55,17 +58,20 @@ const RealTimeMonitor = () => {
   }, []);
 
   // Función para actualizar el gráfico de dona
-  const actualizarGraficoDona = () => {
-    if (donaChartRef.current) {
-      donaChartRef.current.data.datasets[0].data = [memoriaLlena, memoriaVacia];
-      donaChartRef.current.update();
+  const actualizarGraficoDonaRAM = () => {
+    if (donaChartRefRAM.current) {
+      donaChartRefRAM.current.data.datasets[0].data = [
+        memoriaLlena,
+        memoriaVacia,
+      ];
+      donaChartRefRAM.current.update();
     }
   };
 
   useEffect(() => {
     // Crear gráfico de dona
-    const ctx = document.getElementById("donaChart").getContext("2d");
-    donaChartRef.current = new Chart(ctx, {
+    const ctx = document.getElementById("donaChartRAM").getContext("2d");
+    donaChartRefRAM.current = new Chart(ctx, {
       type: "doughnut",
       data: {
         labels: ["Lleno", "Vacio"],
@@ -79,41 +85,124 @@ const RealTimeMonitor = () => {
     });
 
     // Devuelve una función de limpieza para detener el intervalo cuando el componente se desmonta
-    return () => donaChartRef.current.destroy();
+    return () => donaChartRefRAM.current.destroy();
   }, [memoriaOcupada, memoriaLibre]);
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      fetch("http://localhost:8080/realtimemonitor/cpu")
+        .then((response) => response.json())
+        .then((data) => {
+          // Reiniciar el estado de error de conexión si la solicitud es exitosa
+          setErrorDeConexion(false);
+          setMsgError("");
+          const cpuLibre = data.cpu_libre;
+          const cpuOcupada = data.cpu_ocupada;
+
+          // Actualizar el estado con los valores calculados
+          setCPULibre(cpuLibre);
+          setCPUOcupada(cpuOcupada);
+          actualizarGraficoDonaCPU();
+          console.log(data);
+        })
+        .catch((error) => {
+          // Manejar errores de conexión
+          setErrorDeConexion(true);
+          setMsgError("Error de conexión. Inténtelo de nuevo más tarde.");
+          console.error("Error de conexión:", error);
+        });
+    }, 2500);
+
+    return () => clearInterval(intervalId);
+  }, []);
+
+  // Función para actualizar el gráfico de dona
+  const actualizarGraficoDonaCPU = () => {
+    if (donaChartRefCPU.current) {
+      donaChartRefCPU.current.data.datasets[0].data = [cpuLibre, cpuOcupada];
+      donaChartRefCPU.current.update();
+    }
+  };
+
+  useEffect(() => {
+    // Crear gráfico de dona
+    const ctx = document.getElementById("donaChartCPU").getContext("2d");
+    donaChartRefCPU.current = new Chart(ctx, {
+      type: "doughnut",
+      data: {
+        labels: ["Lleno", "Vacio"],
+        datasets: [
+          {
+            data: [cpuLibre, cpuOcupada],
+            backgroundColor: ["#36a2eb", "#ff6384"],
+          },
+        ],
+      },
+    });
+
+    // Devuelve una función de limpieza para detener el intervalo cuando el componente se desmonta
+    return () => donaChartRefCPU.current.destroy();
+  }, [cpuLibre, cpuOcupada]);
+
   return (
     <div>
       <NavBar />
-      <div className="container">
-        <h1 className="titulo">Monitoreo en Tiempo Real</h1>
-
-        {/* Mostrar un mensaje de error si hay un error de conexión */}
-        {errorDeConexion && <div className="error-message">{msgerror}</div>}
-
-        <div className="result-container">
-          <label>Memoria Libre:</label>
-          <span>{memoriaLibre}</span>
-        </div>
-        <div className="result-container">
-          <label>Memoria Ocupada:</label>
-          <span>{memoriaOcupada}</span>
-        </div>
-        <div className="result-container">
-          <label>Memoria Total:</label>
-          <span>{memoriaTotal}</span>
-        </div>
-        <div className="result-container">
-          <label>Porcentaje Memoria Vacia:</label>
-          <span>{memoriaVacia} %</span>
-        </div>
-        <div className="result-container">
-          <label>Porcentaje Memoria Llena:</label>
-          <span>{memoriaLlena} %</span>
-        </div>
-        <div className="chart-container">
-          <canvas id="donaChart" width="300" height="300"></canvas>
-        </div>
-      </div>
+      <h1 className="titulo">Monitoreo en Tiempo Real</h1>
+      <table style={{ width: "100%" }}>
+        <tr>
+          <td style={{ width: "50%", padding: "20px" }}>
+            <div className="container">
+              {errorDeConexion && (
+                <div className="error-message">{msgerror}</div>
+              )}
+              <h1 className="titulo">RAM</h1>
+              <div className="result-container">
+                <label>Memoria Libre:</label>
+                <span>{memoriaLibre}</span>
+              </div>
+              <div className="result-container">
+                <label>Memoria Ocupada:</label>
+                <span>{memoriaOcupada}</span>
+              </div>
+              <div className="result-container">
+                <label>Memoria Total:</label>
+                <span>{memoriaTotal}</span>
+              </div>
+              <div className="result-container">
+                <label>Porcentaje Memoria Vacia:</label>
+                <span>{memoriaVacia} %</span>
+              </div>
+              <div className="result-container">
+                <label>Porcentaje Memoria Llena:</label>
+                <span>{memoriaLlena} %</span>
+              </div>
+              <div className="chart-container">
+                <canvas id="donaChartRAM" width="300" height="300"></canvas>
+              </div>
+            </div>
+          </td>
+          <td style={{ width: "50%", padding: "20px" }}>
+            {/* Repetir el mismo contenido aquí */}
+            <div className="container">
+              <h1 className="titulo">CPU</h1>
+              {errorDeConexion && (
+                <div className="error-message">{msgerror}</div>
+              )}
+              <div className="result-container">
+                <label>cpu libre:</label>
+                <span>{cpuLibre} %</span>
+              </div>
+              <div className="result-container">
+                <label>cpu Ocupada:</label>
+                <span>{cpuOcupada} %</span>
+              </div>
+              <div className="chart-container">
+                <canvas id="donaChartCPU" width="300" height="300"></canvas>
+              </div>
+            </div>
+          </td>
+        </tr>
+      </table>
     </div>
   );
 };
