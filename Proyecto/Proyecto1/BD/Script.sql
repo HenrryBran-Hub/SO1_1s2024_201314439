@@ -18,3 +18,13 @@ CREATE TABLE cpu_data (
     cpu_ocupada FLOAT,
     fecha_hora VARCHAR(50)
 );
+
+CREATE TABLE simulate(
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    process VARCHAR(50),
+    state VARCHAR(50),
+    fecha_hora VARCHAR(50)
+);
+
+SELECT * FROM ram_data;
+SELECT * FROM cpu_data;
