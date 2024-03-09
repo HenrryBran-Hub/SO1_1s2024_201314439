@@ -1,0 +1,1 @@
+savedcmd_/home/henrrybran/Documents/Modules/Ram/ram.ko := ld -r -m elf_x86_64 -z noexecstack --build-id=sha1  -T scripts/module.lds -o /home/henrrybran/Documents/Modules/Ram/ram.ko /home/henrrybran/Documents/Modules/Ram/ram.o /home/henrrybran/Documents/Modules/Ram/ram.mod.o;  make -f ./arch/x86/Makefile.postlink /home/henrrybran/Documents/Modules/Ram/ram.ko

@@ -1,0 +1,1 @@
+savedcmd_/home/henrrybran/Documents/Modules/CPU/Module.symvers :=  scripts/mod/modpost -m -a      -o /home/henrrybran/Documents/Modules/CPU/Module.symvers -T /home/henrrybran/Documents/Modules/CPU/modules.order -i Module.symvers -e 
