@@ -177,7 +177,7 @@ const RealTimeMonitor = () => {
                 <span>{memoriaLlena} %</span>
               </div>
               <div className="chart-container">
-                <canvas id="donaChartRAM" width="300" height="300"></canvas>
+                <canvas id="donaChartRAM"></canvas>
               </div>
             </div>
           </td>
@@ -197,7 +197,7 @@ const RealTimeMonitor = () => {
                 <span>{cpuOcupada} %</span>
               </div>
               <div className="chart-container">
-                <canvas id="donaChartCPU" className="imagen-ram-real"></canvas>
+                <canvas id="donaChartCPU"></canvas>
               </div>
             </div>
           </td>

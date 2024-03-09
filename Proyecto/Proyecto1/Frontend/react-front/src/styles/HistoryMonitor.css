@@ -47,4 +47,13 @@ div {
 .chart-container-graf {
   width: 800px; /* Ancho fijo */
   height: 400px; /* Alto fijo */
+  margin: 20px auto; /* Margen de 20px arriba y abajo, y centrado horizontalmente */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  object-fit: cover; /* Para ajustar la imagen al contenedor */
+  text-align: center; /* Alinear el texto al centro */
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }

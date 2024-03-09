@@ -27,7 +27,7 @@ const ProcessTree = () => {
           setMsgError("Error de conexión. Inténtelo de nuevo más tarde.");
           console.error("Error de conexión:", error);
         });
-    }, 5000);
+    }, 2500);
     return () => clearInterval(interval);
   }, []);
 

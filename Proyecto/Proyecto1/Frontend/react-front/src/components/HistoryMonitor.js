@@ -152,14 +152,14 @@ const HistoryMonitor = () => {
         {errorDeConexion && <div className="error-message">{msgerror}</div>}
         <h4 className="titulo-dos">Memoria Ram</h4>
         <div className="chart-container-graf">
-          <canvas id="lineChartRAM" width="800" height="400"></canvas>
+          <canvas id="lineChartRAM"></canvas>
         </div>
       </div>
       <div className="container">
         {errorDeConexion && <div className="error-message">{msgerror}</div>}
         <h4 className="titulo-dos">CPU</h4>
         <div className="chart-container-graf">
-          <canvas id="lineChartCPU" width="800" height="400"></canvas>
+          <canvas id="lineChartCPU"></canvas>
         </div>
       </div>
     </div>
