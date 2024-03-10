@@ -1,0 +1,53 @@
+version: "3.8"
+
+services:
+  db:
+    image: mysql:latest
+    container_name: mysql_container_project
+    ports:
+      - "3306:3306"
+    volumes:
+      - ../BD:/docker-entrypoint-initdb.d
+      - mysql_data:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: 123abc
+    networks:
+      - my_network
+
+  backend:
+    build: .
+    container_name: backend_container_project
+    ports:
+      - "8080:8080"
+    volumes:
+      - /proc:/proc-host
+    depends_on:
+      - db
+    environment:
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_USER: root
+      DB_PASSWORD: 123abc
+      DB_NAME: KERNEL
+    networks:
+      - my_network
+
+  frontend:
+    build: ../Frontend/react-front
+    container_name: frontend_container_project
+    ports:
+      - "80:80"
+    volumes:
+      - ../Frontend/react-front/nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - backend
+    environment:
+      REACT_APP_BACKEND_URL: http://backend:8080
+    networks:
+      - my_network
+
+networks:
+  my_network:
+
+volumes:
+  mysql_data:

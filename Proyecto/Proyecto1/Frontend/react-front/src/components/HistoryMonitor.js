@@ -12,7 +12,7 @@ const HistoryMonitor = () => {
 
   useEffect(() => {
     const intervalId = setInterval(() => {
-      fetch("http://localhost:8080/historymonitor/ram")
+      fetch("/historymonitor/ram")
         .then((response) => response.json())
         .then((data) => {
           setErrorDeConexion(false);
@@ -79,7 +79,7 @@ const HistoryMonitor = () => {
 
   useEffect(() => {
     const intervalId = setInterval(() => {
-      fetch("http://localhost:8080/historymonitor/cpu")
+      fetch("/historymonitor/cpu")
         .then((response) => response.json())
         .then((data) => {
           setErrorDeConexion(false);

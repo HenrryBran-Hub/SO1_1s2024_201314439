@@ -42,7 +42,13 @@ type Procesos struct {
 func init() {
 	// Abre la conexión a la base de datos
 	var err error
-	db, err = sql.Open("mysql", "root:123abc@tcp(localhost:3306)/KERNEL")
+	dbUser := os.Getenv("DB_USER")
+	dbPassword := os.Getenv("DB_PASSWORD")
+	dbHost := os.Getenv("DB_HOST")
+	dbName := os.Getenv("DB_NAME")
+	connectionString := fmt.Sprintf("%s:%s@tcp(%s)/%s", dbUser, dbPassword, dbHost, dbName)
+
+	db, err = sql.Open("mysql", connectionString)
 	if err != nil {
 		fmt.Println("Error al conectar a la base de datos:", err)
 		panic(err)
@@ -55,7 +61,7 @@ func MySQLRAM() {
 		cmd := exec.Command("cat", "/proc/ram_so1_1s2024")
 		output, err := cmd.Output()
 		if err != nil {
-			fmt.Println("Error al leer el archivo:", err)
+			fmt.Println("Error al leer el archivo MYSQLRAM:", err)
 			continue
 		}
 
@@ -96,8 +102,8 @@ func RealTimeRAM(w http.ResponseWriter, r *http.Request) {
 	cmd := exec.Command("cat", "/proc/ram_so1_1s2024")
 	output, err := cmd.Output()
 	if err != nil {
-		fmt.Println("Error al leer el archivo:", err)
-		http.Error(w, "Error al leer el archivo", http.StatusInternalServerError)
+		fmt.Println("Error al leer el archivo RealTimeRAM:", err)
+		http.Error(w, "Error al leer el archivo RealTimeRAM", http.StatusInternalServerError)
 		return
 	}
 
@@ -108,7 +114,13 @@ func RealTimeRAM(w http.ResponseWriter, r *http.Request) {
 
 func HistoryRAM(w http.ResponseWriter, r *http.Request) {
 	// Lógica para obtener el historial de RAM
-	db, err := sql.Open("mysql", "root:123abc@tcp(localhost:3306)/KERNEL")
+	dbUser := os.Getenv("DB_USER")
+	dbPassword := os.Getenv("DB_PASSWORD")
+	dbHost := os.Getenv("DB_HOST")
+	dbName := os.Getenv("DB_NAME")
+	connectionString := fmt.Sprintf("%s:%s@tcp(%s)/%s", dbUser, dbPassword, dbHost, dbName)
+
+	db, err := sql.Open("mysql", connectionString)
 	if err != nil {
 		fmt.Println("Error al conectar a la base de datos:", err)
 		http.Error(w, "Error al conectar a la base de datos", http.StatusInternalServerError)
@@ -225,8 +237,8 @@ func GetProcessData(w http.ResponseWriter, r *http.Request) {
 	cmd := exec.Command("cat", "/proc/cpu_so1_1s2024")
 	output, err := cmd.Output()
 	if err != nil {
-		fmt.Println("Error al leer el archivo:", err)
-		http.Error(w, "Error al leer el archivo", http.StatusInternalServerError)
+		fmt.Println("Error al leer el archivo PROCESS DATA:", err)
+		http.Error(w, "Error al leer el archivo PROCES DATA", http.StatusInternalServerError)
 		return
 	}
 
@@ -401,7 +413,13 @@ func RealTimeCPU(w http.ResponseWriter, r *http.Request) {
 
 func HistoryCPU(w http.ResponseWriter, r *http.Request) {
 	// Lógica para obtener el historial de RAM
-	db, err := sql.Open("mysql", "root:123abc@tcp(localhost:3306)/KERNEL")
+	dbUser := os.Getenv("DB_USER")
+	dbPassword := os.Getenv("DB_PASSWORD")
+	dbHost := os.Getenv("DB_HOST")
+	dbName := os.Getenv("DB_NAME")
+	connectionString := fmt.Sprintf("%s:%s@tcp(%s)/%s", dbUser, dbPassword, dbHost, dbName)
+
+	db, err := sql.Open("mysql", connectionString)
 	if err != nil {
 		fmt.Println("Error al conectar a la base de datos:", err)
 		http.Error(w, "Error al conectar a la base de datos", http.StatusInternalServerError)

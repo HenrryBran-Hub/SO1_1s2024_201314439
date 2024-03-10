@@ -19,7 +19,7 @@ const RealTimeMonitor = () => {
 
   useEffect(() => {
     const intervalId = setInterval(() => {
-      fetch("http://localhost:8080/realtimemonitor/ram")
+      fetch("/realtimemonitor/ram")
         .then((response) => response.json())
         .then((data) => {
           // Reiniciar el estado de error de conexión si la solicitud es exitosa
@@ -90,7 +90,7 @@ const RealTimeMonitor = () => {
 
   useEffect(() => {
     const intervalId = setInterval(() => {
-      fetch("http://localhost:8080/realtimemonitor/cpu")
+      fetch("/realtimemonitor/cpu")
         .then((response) => response.json())
         .then((data) => {
           // Reiniciar el estado de error de conexión si la solicitud es exitosa

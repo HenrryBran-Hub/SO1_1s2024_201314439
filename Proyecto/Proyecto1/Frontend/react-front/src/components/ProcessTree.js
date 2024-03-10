@@ -13,7 +13,7 @@ const ProcessTree = () => {
   // Cargar los PIDs cada 10 segundos
   useEffect(() => {
     const interval = setInterval(() => {
-      fetch("http://localhost:8080/processtree/pid")
+      fetch("/processtree/pid")
         .then((response) => response.json())
         .then((data) => {
           // Reiniciar el estado de error de conexión si la solicitud es exitosa
@@ -42,7 +42,7 @@ const ProcessTree = () => {
     // Utilizando split
     const parts = selectedOption.split("_");
     const numeroExtraido2 = parts[0] + "_" + parts[1];
-    fetch(`http://localhost:8080/processtree/data?proceso=${numeroExtraido2}`)
+    fetch(`/processtree/data?proceso=${numeroExtraido2}`)
       .then((response) => response.json())
       .then((processData) => {
         // Crea un array de nodos

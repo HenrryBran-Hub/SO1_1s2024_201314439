@@ -25,6 +25,3 @@ CREATE TABLE simulate(
     state VARCHAR(50),
     fecha_hora VARCHAR(50)
 );
-
-SELECT * FROM ram_data;
-SELECT * FROM cpu_data;
