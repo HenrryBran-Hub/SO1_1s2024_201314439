@@ -18,7 +18,7 @@ services:
     build: .
     container_name: backend_container_project
     ports:
-      - "8081:8080"
+      - "8080:8080"
     volumes:
       - /proc:/app/proc_host
     depends_on:
