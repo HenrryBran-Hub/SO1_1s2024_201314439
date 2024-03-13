@@ -1,23 +1,23 @@
-# Use the official Golang image as a base image
+# Imagen base
 FROM golang:latest
 
-# Set the Current Working Directory inside the container
+# Directorio de trabajo dentro del contenedor
 WORKDIR /app
 
-# Copy go mod and sum files
+# Copiar los archivos go.mod y go.sum
 COPY go.mod go.sum ./
 
-# Download all dependencies. Dependencies will be cached if the go.mod and go.sum files are not changed
+# Descargar todas las dependencias
 RUN go mod download
 
-# Copy the source code from the current directory to the Working Directory inside the container
+# Copiar el código fuente desde el directorio actual al contenedor de Docker
 COPY . .
 
-# Build the Go app
+# Compilar la aplicación
 RUN go build -o main .
 
-# Expose port 8080 to the outside world
+# Exponer el puerto por el que la aplicación será accesible
 EXPOSE 8080
 
-# Command to run the executable
+# Comando para ejecutar la aplicación
 CMD ["./main"]

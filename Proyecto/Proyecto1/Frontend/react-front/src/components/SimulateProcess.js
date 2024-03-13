@@ -65,6 +65,7 @@ const SimulateProcess = () => {
     ]);
     network.selectNodes([newProcess.pid + "running"]);
     nodes.update({ id: newProcess.pid + "running", color: "lime" });
+    HandleProcess(processName, "New");
   };
 
   const killProcess = (pid) => {
@@ -83,6 +84,7 @@ const SimulateProcess = () => {
     nodes.update({ id: pid + "ready", color: "blue" });
     nodes.update({ id: pid + "running", color: "blue" });
     nodes.update({ id: pid + "waiting", color: "blue" });
+    HandleProcess(processName, "Kill");
   };
 
   const stopProcess = (pid) => {
@@ -115,6 +117,7 @@ const SimulateProcess = () => {
     network.selectNodes([pid + "ready"]);
     nodes.update({ id: pid + "running", color: "blue" });
     nodes.update({ id: pid + "ready", color: "lime" });
+    HandleProcess(processName, "Stop");
   };
 
   const resumeProcess = (pid) => {
@@ -132,6 +135,36 @@ const SimulateProcess = () => {
     network.selectNodes([pid + "running"]);
     nodes.update({ id: pid + "ready", color: "blue" });
     nodes.update({ id: pid + "running", color: "lime" });
+    HandleProcess(processName, "Resume");
+  };
+
+  const HandleProcess = (process, state) => {
+    // Objeto con los datos a enviar
+    const data = {
+      process: process,
+      state: state,
+    };
+
+    // Realizar la solicitud POST al endpoint
+    fetch("/simulate/addprocess", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Error al enviar los datos");
+        }
+        return response.json();
+      })
+      .then((data) => {
+        console.log("Datos enviados correctamente:", data);
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
   };
 
   return (
