@@ -207,6 +207,17 @@ sudo docker push henrrybran/backend-backend
 sudo docker push henrrybran/backend-frontend
 sudo docker push henrrybran/mysql
 
+git clone https://github.com/HenrryBran-Hub/SO1_1s2024_201314439.git
+
+go mod download
+
+sudo docker tag mysql henrrybran/mysql
+sudo docker tag backend-frontend  henrrybran/backend-frontend
+sudo docker tag backend-backend  henrrybran/backend-backend
+
+sudo docker push henrrybran/backend-backend
+sudo docker push henrrybran/backend-frontend
+sudo docker push henrrybran/mysql
 
 ```
 
