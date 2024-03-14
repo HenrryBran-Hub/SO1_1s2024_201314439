@@ -16,6 +16,9 @@ const RealTimeMonitor = () => {
   const [cpuLibre, setCPULibre] = useState(0);
   const [cpuOcupada, setCPUOcupada] = useState(0);
   const donaChartRefCPU = useRef(null);
+  const memoriaLibreRef = useRef(null);
+  const memoriaOcupadaRef = useRef(null);
+  const memoriaTotalRef = useRef(null);
 
   useEffect(() => {
     const intervalId = setInterval(() => {
@@ -37,13 +40,25 @@ const RealTimeMonitor = () => {
             2
           );
 
-          // Actualizar el estado con los valores calculados
-          setMemoriaLibre(memoriaLibre);
-          setMemoriaOcupada(memoriaOcupada);
-          setMemoriaTotal(memoriaTotal);
-          setMemoriaVacia(memoriaVacia);
-          setMemoriaLlena(memoriaLlena);
-          actualizarGraficoDonaRAM();
+          // Solo actualizar si los datos han cambiado
+          if (
+            memoriaLibre !== memoriaLibreRef.current ||
+            memoriaOcupada !== memoriaOcupadaRef.current ||
+            memoriaTotal !== memoriaTotalRef.current
+          ) {
+            setMemoriaLibre(memoriaLibre);
+            setMemoriaOcupada(memoriaOcupada);
+            setMemoriaTotal(memoriaTotal);
+            setMemoriaVacia(memoriaVacia);
+            setMemoriaLlena(memoriaLlena);
+            actualizarGraficoDonaRAM();
+          }
+
+          // Actualizar referencias
+          memoriaLibreRef.current = memoriaLibre;
+          memoriaOcupadaRef.current = memoriaOcupada;
+          memoriaTotalRef.current = memoriaTotal;
+
           console.log(data);
         })
         .catch((error) => {

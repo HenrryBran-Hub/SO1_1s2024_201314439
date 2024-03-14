@@ -26,7 +26,7 @@ const SimulateProcess = () => {
     }
   }, []);
 
-  const createProcess = () => {
+  const createProcess = async () => {
     if (!processName) {
       alert("Por favor, introduce el nombre del proceso.");
       return;
@@ -65,80 +65,104 @@ const SimulateProcess = () => {
     ]);
     network.selectNodes([newProcess.pid + "running"]);
     nodes.update({ id: newProcess.pid + "running", color: "lime" });
-    HandleProcess(processName, "New");
+    HandleProcess(processes.nombre, "New");
+
+    // Limpiar el valor de processName después de crear el proceso
+    setProcessName("");
   };
 
-  const killProcess = (pid) => {
-    setProcesses(
-      processes.map((p) => (p.pid === pid ? { ...p, estado: "terminated" } : p))
+  const killProcess = async (pid) => {
+    const selectedProcess = processes.find(
+      (p) => Number(p.pid) === Number(pid)
     );
-    nodes.add({ id: pid + "terminated", label: "Terminated", color: "red" });
-    edges.add({
-      id: pid + "running-terminated",
-      from: pid + "running",
-      to: pid + "terminated",
-      label: "Exit",
-    });
-    network.selectNodes([pid + "terminated"]);
-    nodes.update({ id: pid + "new", color: "blue" });
-    nodes.update({ id: pid + "ready", color: "blue" });
-    nodes.update({ id: pid + "running", color: "blue" });
-    nodes.update({ id: pid + "waiting", color: "blue" });
-    HandleProcess(processName, "Kill");
-  };
-
-  const stopProcess = (pid) => {
-    setProcesses(
-      processes.map((p) => (p.pid === pid ? { ...p, estado: "ready" } : p))
-    );
-    if (!nodes.get(pid + "waiting")) {
-      nodes.add({ id: pid + "waiting", label: "Waiting", color: "yellow" });
-      edges.add([
-        {
-          id: pid + "running-waiting",
-          from: pid + "running",
-          to: pid + "waiting",
-          label: "I/O or Event Wait",
-        },
-        {
-          id: pid + "waiting-ready",
-          from: pid + "waiting",
-          to: pid + "ready",
-          label: "I/O or Event Completion",
-        },
-        {
-          id: pid + "running-ready",
-          from: pid + "running",
-          to: pid + "ready",
-          label: "Interrupt",
-        },
-      ]);
+    if (selectedProcess && selectedProcess.estado) {
+      setProcesses(
+        processes.map((p) =>
+          Number(p.pid) === Number(pid) ? { ...p, estado: "terminated" } : p
+        )
+      );
+      nodes.add({ id: pid + "terminated", label: "Terminated", color: "red" });
+      edges.add({
+        id: pid + "running-terminated",
+        from: pid + "running",
+        to: pid + "terminated",
+        label: "Exit",
+      });
+      network.selectNodes([pid + "terminated"]);
+      nodes.update({ id: pid + "new", color: "blue" });
+      nodes.update({ id: pid + "ready", color: "blue" });
+      nodes.update({ id: pid + "running", color: "blue" });
+      nodes.update({ id: pid + "waiting", color: "blue" });
+      HandleProcess(selectedProcess.nombre, "Kill");
     }
-    network.selectNodes([pid + "ready"]);
-    nodes.update({ id: pid + "running", color: "blue" });
-    nodes.update({ id: pid + "ready", color: "lime" });
-    HandleProcess(processName, "Stop");
   };
 
-  const resumeProcess = (pid) => {
-    setProcesses(
-      processes.map((p) => (p.pid === pid ? { ...p, estado: "running" } : p))
+  const stopProcess = async (pid) => {
+    const selectedProcess = processes.find(
+      (p) => Number(p.pid) === Number(pid)
     );
-    if (nodes.get(pid + "waiting")) {
-      nodes.remove(pid + "waiting");
-      edges.remove([
-        pid + "running-waiting",
-        pid + "waiting-ready",
-        pid + "running-ready",
-      ]);
+    if (selectedProcess && selectedProcess.estado) {
+      setProcesses(
+        processes.map((p) =>
+          Number(p.pid) === Number(pid) ? { ...p, estado: "ready" } : p
+        )
+      );
+      if (!nodes.get(pid + "waiting")) {
+        nodes.add({ id: pid + "waiting", label: "Waiting", color: "yellow" });
+        edges.add([
+          {
+            id: pid + "running-waiting",
+            from: pid + "running",
+            to: pid + "waiting",
+            label: "I/O or Event Wait",
+          },
+          {
+            id: pid + "waiting-ready",
+            from: pid + "waiting",
+            to: pid + "ready",
+            label: "I/O or Event Completion",
+          },
+          {
+            id: pid + "running-ready",
+            from: pid + "running",
+            to: pid + "ready",
+            label: "Interrupt",
+          },
+        ]);
+      }
+      network.selectNodes([pid + "ready"]);
+      nodes.update({ id: pid + "running", color: "blue" });
+      nodes.update({ id: pid + "ready", color: "lime" });
+      HandleProcess(selectedProcess.nombre, "Stop");
     }
-    network.selectNodes([pid + "running"]);
-    nodes.update({ id: pid + "ready", color: "blue" });
-    nodes.update({ id: pid + "running", color: "lime" });
-    HandleProcess(processName, "Resume");
   };
 
-  const HandleProcess = (process, state) => {
+  const resumeProcess = async (pid) => {
+    const selectedProcess = processes.find(
+      (p) => Number(p.pid) === Number(pid)
+    );
+    if (selectedProcess && selectedProcess.estado) {
+      setProcesses(
+        processes.map((p) =>
+          Number(p.pid) === Number(pid) ? { ...p, estado: "running" } : p
+        )
+      );
+      if (nodes.get(pid + "waiting")) {
+        nodes.remove(pid + "waiting");
+        edges.remove([
+          pid + "running-waiting",
+          pid + "waiting-ready",
+          pid + "running-ready",
+        ]);
+      }
+      network.selectNodes([pid + "running"]);
+      nodes.update({ id: pid + "ready", color: "blue" });
+      nodes.update({ id: pid + "running", color: "lime" });
+      HandleProcess(selectedProcess.nombre, "Resume");
+    }
+  };
+
+  const HandleProcess = async (process, state) => {
     // Objeto con los datos a enviar
     const data = {
       process: process,
@@ -175,7 +199,7 @@ const SimulateProcess = () => {
           Simulacion de Cambio de Estados en los Procesos
         </h1>
         <div>
-          <textarea
+          <input
             className="simulate"
             value={processName}
             onChange={(e) => setProcessName(e.target.value)}
@@ -184,7 +208,7 @@ const SimulateProcess = () => {
         <div>
           <select
             className="simulate"
-            value={selectedProcess}
+            value={selectedProcess || ""}
             onChange={(e) => setSelectedProcess(e.target.value)}
           >
             {processes.map((process) => (
@@ -201,8 +225,8 @@ const SimulateProcess = () => {
           className="simulate-kill"
           onClick={() =>
             selectedProcess &&
-            processes.find((p) => p.pid === selectedProcess).estado !==
-              "terminated" &&
+            processes.find((p) => Number(p.pid) === Number(selectedProcess))
+              .estado !== "terminated" &&
             killProcess(selectedProcess)
           }
         >
@@ -212,8 +236,8 @@ const SimulateProcess = () => {
           className="simulate-stop"
           onClick={() =>
             selectedProcess &&
-            processes.find((p) => p.pid === selectedProcess).estado !==
-              "terminated" &&
+            processes.find((p) => Number(p.pid) === Number(selectedProcess))
+              .estado !== "terminated" &&
             stopProcess(selectedProcess)
           }
         >
@@ -223,15 +247,15 @@ const SimulateProcess = () => {
           className="simulate-resume"
           onClick={() =>
             selectedProcess &&
-            processes.find((p) => p.pid === selectedProcess).estado !==
-              "terminated" &&
+            processes.find((p) => Number(p.pid) === Number(selectedProcess))
+              .estado !== "terminated" &&
             resumeProcess(selectedProcess)
           }
         >
           Resume
         </button>
       </div>
-      <div id="mynetwork" class="img-container"></div>
+      <div id="mynetwork" className="img-container"></div>
     </div>
   );
 };
