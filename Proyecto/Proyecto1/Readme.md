@@ -219,6 +219,16 @@ sudo docker push henrrybran/backend-backend
 sudo docker push henrrybran/backend-frontend
 sudo docker push henrrybran/mysql
 
+sudo docker pull henrrybran/backend-frontend
+sudo docker pull henrrybran/backend-backend
+
+sudo docker volume rm backend_mysql_data
+sudo docker rmi -f IMAGE_ID
+sudo docker rm CONTAINER_ID
+
+sudo stress --cpu 4 --timeout 60s
+
+
 ```
 
 ___
