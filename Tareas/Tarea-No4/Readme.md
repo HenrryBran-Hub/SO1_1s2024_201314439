@@ -14,7 +14,7 @@ Acontinuacion se tendra el desarrollo de la tarea No. 4 de SO1
 
 ### otros-Links :link:
 
-1. [Enunciado de la Tarea](./Img/SO1_T3_1S2024.pdf)
+1. [Enunciado de la Tarea](./Img/SO1_T4_1S2024.pdf)
 2. [Link de Video(por si no fuciona el de arriba)](https://www.youtube.com/watch?v=_a95O_Y8QVA)
 
 ---
