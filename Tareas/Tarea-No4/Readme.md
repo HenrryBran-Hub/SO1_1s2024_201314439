@@ -6,7 +6,7 @@
 
 Acontinuacion se tendra el desarrollo de la tarea No. 4 de SO1
 
-## Video de Demostración de Docker :movie_camera:
+## Video de Demostración :movie_camera:
 
 ### Enlace al Video con Miniatura
 
