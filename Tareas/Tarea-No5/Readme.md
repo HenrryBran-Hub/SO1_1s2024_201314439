@@ -58,12 +58,14 @@ Para conectar Grafana con Redis, sigue estos pasos:
 
 <img src="./Img/3.png">
 
+
+
 [Link de redis]([https://henrrybranhub.grafana.net/connections/add-new-connection/redis?page=alloy])
 
 
 ### otros-Links :link:
 
-1. [Enunciado de la Tarea](./Img/SO1_T4_1S2024.pdf)
+1. [Enunciado de la Tarea](./Img/SO1_T5_1S2024.pdf)
 
 ---
 
