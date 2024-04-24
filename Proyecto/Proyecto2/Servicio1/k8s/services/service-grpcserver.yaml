@@ -10,4 +10,4 @@ spec:
       targetPort: 3001
   selector:
     name: deploy-grpcserver
-  type: NodePort
+  type: ClusterIP

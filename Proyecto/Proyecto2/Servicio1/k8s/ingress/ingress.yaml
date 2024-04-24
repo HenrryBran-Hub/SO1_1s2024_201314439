@@ -18,3 +18,17 @@ spec:
                 name: service-producer
                 port:
                   number: 3002
+          - path: /producer
+            pathType: Prefix
+            backend:
+              service:
+                name: service-producer
+                port:
+                  number: 3002
+          - path: /grpcclient
+            pathType: Prefix
+            backend:
+              service:
+                name: service-grpcclient
+                port:
+                  number: 3000

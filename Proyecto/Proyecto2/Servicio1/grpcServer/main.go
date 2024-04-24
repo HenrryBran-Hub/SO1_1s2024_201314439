@@ -1,16 +1,17 @@
 package main
 
 import (
+	"bytes"
 	"context"
-	"database/sql"
+	"encoding/json"
 	"fmt"
 	"log"
 	"net"
+	"net/http"
 	"os"
 
 	pb "grpcServer/server"
 
-	_ "github.com/go-sql-driver/mysql" // Importación agregada
 	"github.com/joho/godotenv"
 	"google.golang.org/grpc"
 )
@@ -19,44 +20,11 @@ type server struct {
 	pb.UnimplementedGetInfoServer
 }
 
-const (
-	port = ":3001"
-)
-
 type Data struct {
 	Name  string
 	Album string
 	Year  string
 	Rank  string
-}
-
-var db *sql.DB
-
-func initDB() {
-	err := godotenv.Load(".env")
-	if err != nil {
-		log.Fatalf("Error loading .env file: %v", err)
-	}
-
-	dbUser := os.Getenv("DB_USER")
-	dbPassword := os.Getenv("DB_PASSWORD")
-	dbHost := os.Getenv("DB_HOST")
-	dbPort := os.Getenv("DB_PORT")
-	dbName := os.Getenv("DB_NAME")
-
-	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", dbUser, dbPassword, dbHost, dbPort, dbName)
-
-	// Abre la conexión a la base de datos
-	db, err = sql.Open("mysql", dsn)
-	if err != nil {
-		log.Fatalf("Error connecting to the database: %v", err)
-	}
-
-	// Verifica si la conexión a la base de datos es válida
-	err = db.Ping()
-	if err != nil {
-		log.Fatalf("Error pinging database: %v", err)
-	}
 }
 
 func (s *server) ReturnInfo(ctx context.Context, in *pb.RequestId) (*pb.ReplyInfo, error) {
@@ -68,29 +36,38 @@ func (s *server) ReturnInfo(ctx context.Context, in *pb.RequestId) (*pb.ReplyInf
 		Rank:  in.GetRank(),
 	}
 	fmt.Println(data)
-	//insertDB(data)
+	sendToServer(data)
 	return &pb.ReplyInfo{Info: "Hola cliente, recibí el album"}, nil
 }
 
-func insertDB(data Data) {
-	// Insert data into the database
-	stmt, err := db.Prepare("INSERT INTO Banda (Name, Album, Year, Ranked) VALUES (?, ?, ?, ?)")
+func sendToServer(data Data) {
+	jsonData, err := json.Marshal(data)
 	if err != nil {
-		log.Fatalf("Error preparing statement: %v", err)
+		log.Fatalf("Error marshaling data: %v", err)
 	}
-	defer stmt.Close()
 
-	_, execErr := stmt.Exec(data.Name, data.Album, data.Year, data.Rank)
-	if execErr != nil {
-		log.Fatalf("Error executing statement: %v", execErr)
+	// Obtener la URL del servidor desde la variable de entorno
+	serverURL := os.Getenv("SERVER_URL")
+
+	resp, err := http.Post(serverURL, "application/json", bytes.NewBuffer(jsonData))
+	if err != nil {
+		log.Fatalf("Error sending data: %v", err)
 	}
-	fmt.Println("Data inserted successfully")
+	defer resp.Body.Close()
+
+	fmt.Println("Data sent to producer successfully")
 }
 
 func main() {
 	fmt.Println("Inicio el servicio")
-	//initDB()
-	//defer db.Close()
+	err := godotenv.Load(".env")
+	if err != nil {
+		log.Fatalf("Error loading .env file: %v", err)
+	}
+
+	var (
+		port = ":" + os.Getenv("PORT")
+	)
 
 	listen, err := net.Listen("tcp", port)
 	if err != nil {

@@ -13,6 +13,17 @@ import (
 	"github.com/joho/godotenv"
 )
 
+type Data struct {
+	Name  string `json:"name"`
+	Album string `json:"album"`
+	Year  string `json:"year"`
+	Rank  string `json:"rank"`
+}
+
+func (d Data) ToString() string {
+	return fmt.Sprintf(`{"name":"%s","album":"%s","year":"%s","rank":"%s"}`, d.Name, d.Album, d.Year, d.Rank)
+}
+
 func loadConfig() (string, string, string) {
 	err := godotenv.Load()
 	if err != nil {
@@ -26,7 +37,14 @@ func loadConfig() (string, string, string) {
 	return port, kafkaBrokers, kafkaTopic
 }
 
-func sendMessage(w http.ResponseWriter, r *http.Request) {
+func receiveData(w http.ResponseWriter, r *http.Request) {
+	var data Data
+	err := json.NewDecoder(r.Body).Decode(&data)
+	if err != nil {
+		http.Error(w, "Error al decodificar el cuerpo de la solicitud", http.StatusBadRequest)
+		return
+	}
+
 	_, kafkaBrokers, kafkaTopic := loadConfig()
 
 	producer, err := kafka.NewProducer(&kafka.ConfigMap{
@@ -38,20 +56,11 @@ func sendMessage(w http.ResponseWriter, r *http.Request) {
 	}
 	defer producer.Close()
 
-	var message struct {
-		Topic   string `json:"topic"`
-		Message string `json:"message"`
-	}
-
-	err = json.NewDecoder(r.Body).Decode(&message)
-	if err != nil {
-		http.Error(w, "Error al decodificar el cuerpo de la solicitud", http.StatusBadRequest)
-		return
-	}
+	dataString := data.ToString()
 
 	err = producer.Produce(&kafka.Message{
 		TopicPartition: kafka.TopicPartition{Topic: &kafkaTopic, Partition: kafka.PartitionAny},
-		Value:          []byte(message.Message),
+		Value:          []byte(dataString),
 	}, nil)
 	if err != nil {
 		http.Error(w, "Error al enviar el mensaje a Kafka", http.StatusInternalServerError)
@@ -64,7 +73,7 @@ func sendMessage(w http.ResponseWriter, r *http.Request) {
 func main() {
 	port, _, _ := loadConfig()
 
-	http.HandleFunc("/sendMessage", sendMessage)
+	http.HandleFunc("/receive", receiveData)
 	log.Printf("Escuchando en el puerto %s", port)
 
 	go func() {
