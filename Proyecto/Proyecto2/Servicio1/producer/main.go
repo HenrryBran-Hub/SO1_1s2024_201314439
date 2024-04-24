@@ -6,6 +6,8 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"os/signal"
+	"syscall"
 
 	"github.com/confluentinc/confluent-kafka-go/kafka"
 	"github.com/joho/godotenv"
@@ -64,5 +66,15 @@ func main() {
 
 	http.HandleFunc("/sendMessage", sendMessage)
 	log.Printf("Escuchando en el puerto %s", port)
-	log.Fatal(http.ListenAndServe(":"+port, nil))
+
+	go func() {
+		log.Fatal(http.ListenAndServe(":"+port, nil))
+	}()
+
+	// Manejar la señal de interrupción para limpiar recursos antes de salir
+	sigchan := make(chan os.Signal, 1)
+	signal.Notify(sigchan, syscall.SIGINT, syscall.SIGTERM)
+	<-sigchan
+
+	log.Println("Recibida señal de interrupción, finalizando...")
 }

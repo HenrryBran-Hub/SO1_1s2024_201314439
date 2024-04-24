@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: deploy-grpcserver
+  namespace: sopes1
+spec:
+  selector:
+    matchLabels:
+      name: deploy-grpcserver
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        name: deploy-grpcserver
+    spec:
+      containers:
+        - name: grpcserver
+          image: henrrybran/grpcserver:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 3001

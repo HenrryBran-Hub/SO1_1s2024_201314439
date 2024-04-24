@@ -3,8 +3,10 @@ package main
 import (
 	"context"
 	"fmt"
-	pb "grpcClient/client"
 	"log"
+	"os"
+
+	pb "grpcClient/client"
 
 	"github.com/gofiber/fiber/v2"
 	"google.golang.org/grpc"
@@ -34,12 +36,12 @@ func insertData(c *fiber.Ctx) error {
 		Rank:  data["rank"],
 	}
 
-	conn, err := grpc.Dial("localhost:3001", grpc.WithTransportCredentials(insecure.NewCredentials()),
-		grpc.WithBlock())
+	serverPort := os.Getenv("PORT_SERVER")
+	ipHost := os.Getenv("IP_HOST")
+	conn, err := grpc.Dial(ipHost+":"+serverPort, grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithBlock())
 	if err != nil {
 		log.Fatalln(err)
 	}
-
 	cl := pb.NewGetInfoClient(conn)
 	defer func(conn *grpc.ClientConn) {
 		err := conn.Close()
@@ -59,7 +61,6 @@ func insertData(c *fiber.Ctx) error {
 	}
 
 	fmt.Println("Respuesta del server:" + ret.GetInfo())
-
 	return nil
 }
 
@@ -67,7 +68,8 @@ func main() {
 	app := fiber.New()
 	app.Post("/insert", insertData)
 
-	err := app.Listen(":3000")
+	port := os.Getenv("PORT")
+	err := app.Listen(":" + port)
 	if err != nil {
 		return
 	}
