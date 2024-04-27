@@ -60,19 +60,7 @@ func sendLogToMongo(data string) {
 	fmt.Printf("Log enviado a MongoDB: %v\n", log)
 }
 
-func connectAndSendToRedis(data string) {
-	// Obtener variables de entorno para Redis
-	redisHost := os.Getenv("REDIS_HOST")
-	redisPassword := os.Getenv("REDIS_PASSWORD")
-	redisAddr := redisHost + ":6379"
-
-	// Crear cliente Redis
-	rdb := redis.NewClient(&redis.Options{
-		Addr:     redisAddr,
-		Password: redisPassword,
-		DB:       0,
-	})
-
+func connectAndSendToRedis(data string, rdb *redis.Client) {
 	// Decodificar el JSON
 	var album Album
 	err := json.Unmarshal([]byte(data), &album)
@@ -98,20 +86,47 @@ func connectAndSendToRedis(data string) {
 		return
 	}
 
-	// Enviar datos a Redis
+	err = rdb.HSet(context.Background(), "Album", album.Album, f).Err()
+	if err != nil {
+		fmt.Printf("Error al enviar datos a Redis: %v\n", err)
+		return
+	}
+
+	// Incrementar la cuenta de la banda
 	err = rdb.HIncrBy(context.Background(), "Banda", album.Name, 1).Err()
 	if err != nil {
 		fmt.Printf("Error al enviar datos a Redis: %v\n", err)
 		return
 	}
 
-	err = rdb.Incr(context.Background(), "total").Err()
+	fmt.Printf("Datos enviados a Redis: %+v\n", album)
+}
+
+func calculateAndSaveAverage(rdb *redis.Client) {
+	// Obtener todos los valores almacenados en el hash "Album"
+	vals, err := rdb.HGetAll(context.Background(), "Album").Result()
 	if err != nil {
-		fmt.Printf("Error al enviar datos a Redis: %v\n", err)
+		fmt.Printf("Error al obtener los valores de Redis: %v\n", err)
 		return
 	}
 
-	fmt.Printf("Datos enviados a Redis: %+v\n", album)
+	// Calcular el promedio para cada álbum
+	for album, val := range vals {
+		f, err := strconv.ParseFloat(val, 64)
+		if err != nil {
+			fmt.Printf("Error al convertir el valor a float64: %v\n", err)
+			continue
+		}
+		// Calcular el promedio
+		average := f / float64(len(vals))
+		// Guardar el promedio en Redis con el nombre del álbum como clave
+		err = rdb.HSet(context.Background(), "Average", album, average).Err()
+		if err != nil {
+			fmt.Printf("Error al guardar el promedio en Redis: %v\n", err)
+			continue
+		}
+		fmt.Printf("El promedio para %s es: %.2f\n", album, average)
+	}
 }
 
 func main() {
@@ -142,13 +157,30 @@ func main() {
 		log.Fatalf("Error al suscribirse al topic: %v", err)
 	}
 
+	// Obtener variables de entorno para Redis
+	redisHost := os.Getenv("REDIS_HOST")
+	redisPassword := os.Getenv("REDIS_PASSWORD")
+	redisAddr := redisHost + ":6379"
+
+	// Crear cliente Redis
+	rdb := redis.NewClient(&redis.Options{
+		Addr:     redisAddr,
+		Password: redisPassword,
+		DB:       0,
+	})
+
+	// Cerrar la conexión al final
+	defer rdb.Close()
+
 	// Escuchar mensajes de Kafka
 	fmt.Printf("Escuchando el topic: %s\n", kafkaTopic)
 	for {
 		msg, err := consumer.ReadMessage(-1)
 		if err == nil {
 			fmt.Printf("Mensaje recibido: %s\n", string(msg.Value))
-			connectAndSendToRedis(string(msg.Value))
+			connectAndSendToRedis(string(msg.Value), rdb)
+			// Calcular y guardar el promedio
+			calculateAndSaveAverage(rdb)
 			//sendLogToMongo(string(msg.Value))
 		} else {
 			log.Printf("Error al consumir mensaje: %v", err)

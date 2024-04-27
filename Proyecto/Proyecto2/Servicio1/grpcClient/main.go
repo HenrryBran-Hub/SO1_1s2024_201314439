@@ -64,8 +64,14 @@ func insertData(c *fiber.Ctx) error {
 	return nil
 }
 
+func checkConnection(c *fiber.Ctx) error {
+	return c.SendString("OK")
+}
+
 func main() {
 	app := fiber.New()
+	// Endpoint para verificar la conexión
+	app.Get("/check", checkConnection)
 	app.Post("/insert", insertData)
 
 	port := os.Getenv("PORT")
