@@ -17,7 +17,7 @@ COPY . .
 RUN go build -o grpcClient .
 
 # Expose port 3000 to the outside world
-EXPOSE 3000
+EXPOSE 3004
 
 # Command to run the executable
 CMD ["./grpcClient"]

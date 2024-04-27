@@ -35,3 +35,13 @@ spec:
                 secretKeyRef:
                   name: secret-env-consumer
                   key: KAFKA_TOPIC
+            - name: REDIS_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: secret-env-consumer
+                  key: REDIS_HOST
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: secret-env-consumer
+                  key: REDIS_PASSWORD
