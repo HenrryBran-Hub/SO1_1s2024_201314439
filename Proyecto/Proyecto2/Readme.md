@@ -19,6 +19,8 @@ locust -f traffic.py
 
 ```
 
+![locust](../Proyecto2/Img/1.png)
+
 Todo esto lo hacemos en la carpeta de locust del servicio1, ahi esta el archivo python y lo que se le cambio generalmente es el nombre del archivo json que se cargara en la linea 29 el album.json
 
 ---
@@ -147,4 +149,20 @@ OK
 2) "Banda"
 3) "Ranked"
 127.0.0.1:6379>
+```
+
+# Intalacion de la api Node js
+
+```javascript
+# Creamos las imagenes
+docker build -t henrrybran/apinodejs:latest .
+
+docker build -t henrrybran/vauweb:latest .
+
+# Subimos las imagenes
+
+docker push henrrybran/apinodejs:latest
+
+docker push henrrybran/vauweb:latest
+
 ```
