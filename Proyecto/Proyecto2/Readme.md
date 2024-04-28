@@ -77,9 +77,39 @@ docker push henrrybran/grpcserver:latest
 
 ```
 
+![archivos yaml](../Proyecto2/Img/3.png)
+
+![archivos yaml](../Proyecto2/Img/4.png)
+
+![archivos yaml](../Proyecto2/Img/5.png)
+
+![archivos yaml](../Proyecto2/Img/6.png)
+
+![archivos yaml](../Proyecto2/Img/7.png)
+
 Basicamente instalamos los paquetes en los main de cada archivo y cambiamos la estructura a favor del json que estamos enviando, y tambien se esta mostrando el contenido, tambien para ejecutar el cliente y servidor hay que crear sus ejecutables y sus imagenes de docker las subimos.
 
 ---
+
+# creamos nuestro kubernete en la area que especificamos
+
+instalamos el sdk de gcloud
+
+![archivos yaml](../Proyecto2/Img/15.png)
+
+definimos una zona 
+
+![archivos yaml](../Proyecto2/Img/13.png)
+
+creamos nuestro cluster
+
+![archivos yaml](../Proyecto2/Img/14.png)
+
+mostramos nuestra zona y nuestro cluester creado
+
+![archivos yaml](../Proyecto2/Img/16.png)
+
+
 
 # creamos nuestro namespace
 
@@ -101,6 +131,24 @@ kubectl apply -f https://strimzi.io/examples/latest/kafka/kafka-persistent-singl
 ```
 
 nota: levantamos el zookepper, brokers y otra
+
+# Antes de ejecutar obiamente necesitamos crear los dockerfile estos se encuentran en cada carpeta
+
+estos los creamos siempre con los comandose especificos y los subimos
+
+```javascript
+
+# Creamos sus imagenes de grpcClient y grpcServer
+
+docker build -t henrrybran/<nombre_imagen>:latest .
+
+# Subimos las imagenes a dockerhub previamente hecho el login
+
+docker push henrrybran/<nombre_imagen>:latest
+
+```
+
+![funcionamiento](../Proyecto2/Img/12.png)
 
 # ejecutamos los secrets del consumidor de kafka
 
@@ -166,3 +214,66 @@ docker push henrrybran/apinodejs:latest
 docker push henrrybran/vauweb:latest
 
 ```
+# Para la instalacion de grafana y redis y mongo
+
+para la instalcion de estos componente se necesita simplemente los archivos yaml que ya tenemos hechos y que se encuentran en la carpeta deployments, secrets y services
+
+```javascript
+kubectl apply -f ./secrets/
+
+kubectl apply -f ./deployments/
+
+kubectl apply -f ./services/
+```
+
+y para la conexion de grafana con redis hay que hacer este cambio 
+
+![funcionamiento](../Proyecto2/Img/11.png)
+
+# Cremos nuestras dos cloudrun
+
+![funcionamiento](../Proyecto2/Img/17.png)
+
+# Mostramos nuestra pagina de vue js
+
+![funcionamiento](../Proyecto2/Img/18.png)
+
+# Se realizan unas pruebas al sistema de kubernetes tanto los productores como api node js de cloud run
+
+![funcionamiento](../Proyecto2/Img/19.png)
+
+![funcionamiento](../Proyecto2/Img/20.png)
+
+# Mostramos nuestros pods creados
+
+![funcionamiento](../Proyecto2/Img/21.png)
+
+# Mostramos nuestros servicios creados
+
+![funcionamiento](../Proyecto2/Img/22.png)
+
+# Mostramos nuestros confimap creados
+
+![funcionamiento](../Proyecto2/Img/23.png)
+
+# Mostramos nuestros secrets creados
+
+![funcionamiento](../Proyecto2/Img/24.png)
+
+# Mostramos nuestros ingress creados
+
+![funcionamiento](../Proyecto2/Img/25.png)
+
+# Mostramos como funciona la app
+
+ingresamos a locust
+
+![funcionamiento](../Proyecto2/Img/8.png)
+
+despues ingresamos a nuestra pagina cloudrun
+
+![funcionamiento](../Proyecto2/Img/9.png)
+
+por ultimo ingresamos a grafana
+
+![funcionamiento](../Proyecto2/Img/10.png)
