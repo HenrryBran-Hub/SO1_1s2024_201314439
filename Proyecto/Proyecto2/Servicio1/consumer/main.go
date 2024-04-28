@@ -178,10 +178,10 @@ func main() {
 		msg, err := consumer.ReadMessage(-1)
 		if err == nil {
 			fmt.Printf("Mensaje recibido: %s\n", string(msg.Value))
+			sendLogToMongo(string(msg.Value))
 			connectAndSendToRedis(string(msg.Value), rdb)
 			// Calcular y guardar el promedio
 			calculateAndSaveAverage(rdb)
-			//sendLogToMongo(string(msg.Value))
 		} else {
 			log.Printf("Error al consumir mensaje: %v", err)
 			break
